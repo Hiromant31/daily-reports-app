@@ -125,14 +125,24 @@ export default function Dashboard() {
     <div className="min-h-screen bg-gray-100 text-gray-800">
       {/* Шапка */}
       <header className="bg-white shadow-md px-6 py-4 flex justify-between items-center">
-        <h1 className="text-xl font-bold">Название Компании</h1>
-        <button
-          className="text-sm text-red-600 hover:underline"
-          onClick={handleLogout}
-        >
-          Выйти
-        </button>
-      </header>
+  <h1 className="text-xl font-bold">Название Компании</h1>
+  <div className="flex items-center gap-4">
+    {profile?.role === 'admin' && (
+      <a
+        href="/admin"
+        className="text-sm text-indigo-600 hover:underline border border-indigo-600 rounded px-3 py-1 mr-2"
+      >
+        Админ
+      </a>
+    )}
+    <button
+      className="text-sm text-red-600 hover:underline"
+      onClick={handleLogout}
+    >
+      Выйти
+    </button>
+  </div>
+</header>
 
       {/* Основная часть */}
       <main className="max-w-4xl mx-auto mt-8 p-4 bg-white rounded shadow">
