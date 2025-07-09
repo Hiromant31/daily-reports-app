@@ -82,7 +82,6 @@ export default function ReportPage() {
             <FormInput label="Звонки продавцам" value={form.calls_sellers} onChange={v => handleChange('calls_sellers', v)} />
             <FormInput label="Звонки покупателям" value={form.calls_buyers} onChange={v => handleChange('calls_buyers', v)} />
             <FormInput label="Входящие звонки" value={form.incoming_calls} onChange={v => handleChange('incoming_calls', v)} />
-            <FormInput label="Внесенные в CRM" value={form.crm_entries} onChange={v => handleChange('crm_entries', v)} />
             <FormInput label="Статусы" value={form.statuses} onChange={v => handleChange('statuses', v)} />
             <FormInput label="Баннеры" value={form.banners} onChange={v => handleChange('banners', v)} />
             <FormInput label="Расклейка" value={form.stickers} onChange={v => handleChange('stickers', v)} />
@@ -92,17 +91,17 @@ export default function ReportPage() {
           <fieldset className="grid grid-cols-2 md:grid-cols-3 gap-4">
             <FormInput label="Встречи с продавцами" value={form.meetings_sellers} onChange={v => handleChange('meetings_sellers', v)} />
             <FormInput label="Встречи с покупателями" value={form.meetings_buyers} onChange={v => handleChange('meetings_buyers', v)} />
-            <FormInput label="Показы продавцов" value={form.shows_sellers} onChange={v => handleChange('shows_sellers', v)} />
-            <FormInput label="Показы покупателей" value={form.shows_buyers} onChange={v => handleChange('shows_buyers', v)} />
-            <FormInput label="Договор продавец" value={form.contracts_sellers} onChange={v => handleChange('contracts_sellers', v)} />
-            <FormInput label="Договор покупатель" value={form.contracts_buyers} onChange={v => handleChange('contracts_buyers', v)} />
+            <FormInput label="Показы продавцов" value={form.showings_sellers} onChange={v => handleChange('showings_sellers', v)} />
+            <FormInput label="Показы покупателей" value={form.showings_buyers} onChange={v => handleChange('showings_buyers', v)} />
+            <FormInput label="Договоры с продавцами" value={form.contracts_sellers} onChange={v => handleChange('contracts_sellers', v)} />
+            <FormInput label="Договоры с покупателями" value={form.contracts_buyers} onChange={v => handleChange('contracts_buyers', v)} />
           </fieldset>
 
           {/* Группа 3 — Объекты, аналитика, снижение */}
           <fieldset className="grid grid-cols-2 md:grid-cols-3 gap-4">
-            <FormInput label="Аналитика СМА" value={form.analytics} onChange={v => handleChange('analytics', v)} />
-            <FormInput label="Внесение объектов" value={form.listings_added} onChange={v => handleChange('listings_added', v)} />
-            <FormInput label="Фотосессии" value={form.photosessions} onChange={v => handleChange('photosessions', v)} />
+            <FormInput label="Аналитика СМА" value={form.sma_analytics} onChange={v => handleChange('sma_analytics', v)} />
+            <FormInput label="Внесение объектов" value={form.objects_uploaded} onChange={v => handleChange('objects_uploaded', v)} />
+            <FormInput label="Профессиональные фото" value={form.pro_photos} onChange={v => handleChange('pro_photos', v)} />
             <FormInput label="Снижение цены (шт)" value={form.price_reductions} onChange={v => handleChange('price_reductions', v)} />
             <FormInput label="Сумма снижений (₽)" value={form.sum_price_reduction} onChange={v => handleChange('sum_price_reduction', v)} />
           </fieldset>
