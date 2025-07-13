@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import {Geist, Geist_Mono } from "next/font/google";
+import { Rubik } from 'next/font/google'
 import "./globals.css";
+import "./register/RegisterPage.module.css";
+
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -11,6 +14,12 @@ const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+const rubik = Rubik({
+  subsets: ['latin', 'cyrillic'],
+  weight: ['400', '500', '700'], // только нужные веса
+  variable: '--font-rubik',
+})
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -25,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${rubik.variable} ${geistMono.variable} antialiased`}
       >
         {children}
       </body>

@@ -6,7 +6,17 @@ module.exports = {
     './components/**/*.{js,ts,jsx,tsx}'
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        'rubik': ['var(--font-rubik)', 'sans-serif'],
+      },
+      colors: {
+        accent: {
+          DEFAULT: '#af111c',
+          500: '#af111c'
+        }
+      }
+    }
   },
   plugins: [],
 }
