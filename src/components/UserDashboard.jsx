@@ -10,9 +10,6 @@ import ReportFormModal from '@/components/ReportFormModal'
 
 import { AnimatePresence, motion } from 'framer-motion'
 
-
-
-
 export default function UserDashboard({ user, isAdmin = false, profile: initialProfile }) {
   const [profile, setProfile] = useState(initialProfile)
   const [summary, setSummary] = useState(null)
@@ -31,17 +28,12 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
   const showSettings = searchParams.has('settings')
 
   const closeSettings = () => {
-  // Получаем текущие параметры
-  const params = new URLSearchParams(searchParams.toString())
-  // Удаляем параметр settings
-  params.delete('settings')
-
-  // Формируем новый путь с оставшимися параметрами
-  const basePath = window.location.pathname
-  const newPath = params.toString() ? `${basePath}?${params.toString()}` : basePath
-
-  router.push(newPath)
-}
+    const params = new URLSearchParams(searchParams.toString())
+    params.delete('settings')
+    const basePath = window.location.pathname
+    const newPath = params.toString() ? `${basePath}?${params.toString()}` : basePath
+    router.push(newPath)
+  }
 
   useEffect(() => {
     if (!user) return
@@ -72,7 +64,7 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
     const loadSummaryAndReports = async () => {
       setLoading(true)
 
-      const { data, error } = await supabase
+      const { data: allReports, error } = await supabase
         .from('reports')
         .select('*')
         .gte('date', fromDate)
@@ -84,6 +76,27 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
         setLoading(false)
         return
       }
+
+      const filteredReports = []
+
+      const reportsByDate = allReports.reduce((acc, report) => {
+        if (!acc[report.date]) acc[report.date] = []
+        acc[report.date].push(report)
+        return acc
+      }, {})
+
+      for (const date in reportsByDate) {
+        const dateReports = reportsByDate[date]
+        const ready = dateReports.find(r => r.status === 'ready')
+        if (ready) {
+          filteredReports.push(ready)
+        } else {
+          const set = dateReports.find(r => r.status === 'set')
+          if (set) filteredReports.push(set)
+        }
+      }
+
+      console.log('📋 Отчёты по дням:', filteredReports)
 
       const total = {
         calls_sellers: 0,
@@ -105,14 +118,14 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
         statuses: 0,
       }
 
-      for (const report of data) {
+      for (const report of filteredReports) {
         for (const key in total) {
           total[key] += report[key] || 0
         }
       }
 
       setSummary(total)
-      setReports(data)
+      setReports(filteredReports)
       setLoading(false)
     }
 
