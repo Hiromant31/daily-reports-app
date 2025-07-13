@@ -9,6 +9,8 @@ import { useModal } from '@/components/ModalContext'
 import EditProfileModal from '@/components/EditProfileModal'
 import ReportFormModal from '@/components/ReportFormModal'
 import UserSidebar from '@/components/UserSidebar'
+import AchievementBadge from '@/components/AchievementBadge'
+
 
 import { AnimatePresence, motion } from 'framer-motion'
 
@@ -200,6 +202,7 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
               <>
                 {/* График */}
                 <div className="my-10">
+                  <AchievementBadge reports={reports} />
                   <ActivityChart reports={reports} fromDate={fromDate} toDate={toDate} activeTab={activeTab} />
                 </div>
 

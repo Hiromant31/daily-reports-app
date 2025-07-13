@@ -51,7 +51,7 @@ export default function DashboardPage() {
 
   return (
     <div>
-        <header className="bg-white shadow-md px-4 py-3 flex items-center justify-between w-full">
+<header className="bg-white shadow-md px-4 py-3 flex items-center justify-between w-full">
   {/* Левая часть */}
   <div className="flex items-center gap-2 w-full">
     {/* На мобильных — модуль с кнопкой меню (внутри — имя и кнопка ☰) */}
@@ -60,10 +60,10 @@ export default function DashboardPage() {
     </div>
 
     {/* На десктопе — кнопка выйти */}
-    <div className="hidden md:block">
+    <div className="hidden md:block ml-auto">
       <button
-        className="text-sm text-red-600 hover:underline"
         onClick={handleLogout}
+        className="px-4 py-2 text-sm font-semibold text-red-600 bg-red-50 border border-red-200 rounded hover:bg-red-100 transition"
       >
         Выйти
       </button>

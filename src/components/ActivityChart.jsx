@@ -66,7 +66,7 @@ const bins = useMemo(() => {
   const maxVal = Math.max(...bins, 1)
 
   const width = 400 // для viewBox, svg масштабируется
-  const height = 100
+  const height = 150
   const padding = 30
 
   const stepX = (width - 2 * padding) / (parts - 1)

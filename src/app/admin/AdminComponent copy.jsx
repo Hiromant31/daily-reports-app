@@ -185,7 +185,7 @@ export default function AdminPage() {
             className="px-4 py-2 rounded border font-semibold"
             style={{ borderColor: ACCENT_COLOR, color: ACCENT_COLOR }}
           >
-            Назад
+          Назад
           </button>
           <button
             onClick={handleLogout}

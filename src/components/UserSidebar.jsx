@@ -36,7 +36,7 @@ export default function UserSidebar({ user, profile, isAdmin }) {
       {/* Мобильная кнопка для меню */}
       <div className="md:hidden flex items-center justify-between px-4 py-2 bg-white w-full">
   {/* Имя слева */}
-  <p className="w-full text-xl font-bold text-[#e53740]">{profile?.first_name} {profile?.last_name}</p>
+  <p className="w-full text-xl relative mr-30 font-bold text-[#e53740]">{profile?.first_name} {profile?.last_name}</p>
 
   {/* Кнопка ☰ справа */}
   <button onClick={() => setMenuOpen(true)} className="text-xl font-bold text-red-600">
@@ -166,7 +166,7 @@ export default function UserSidebar({ user, profile, isAdmin }) {
             )}
             
             {/* Добавляем проверку isAdmin для десктопной версии */}
-            {isAdmin && (
+            {(isAdmin || profile?.role === 'admin') && (
               <>
                 {/* Кнопка "Редактировать профиль" */}
                 <button

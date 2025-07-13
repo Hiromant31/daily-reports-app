@@ -135,26 +135,36 @@ export default function AdminPage() {
     }
     return (
       <div className="min-h-screen bg-white text-gray-600 p-6">
-        <div className="mb-6 flex justify-between items-center">
-          <button
-            onClick={() => router.push('/admin')}
-            className="px-4 py-2 rounded border font-semibold"
-            style={{ borderColor: ACCENT_COLOR, color: ACCENT_COLOR }}
-          >
-            Назад
-          </button>
-          {profile && (
-            <div className="md:hidden">
-              <UserSidebar user={selectedUser} profile={selectedProfile} isAdmin={profile.role === 'admin'} />
-            </div>
-          )}
-          <button
-            onClick={handleLogout}
-            className="hidden md:block px-4 py-2 rounded border font-semibold"
-            style={{ borderColor: ACCENT_COLOR, color: ACCENT_COLOR }}
-          >
-            Выйти
-          </button>
+        <div className="mb-6 flex items-center">
+  {/* Кнопка "Назад" */}
+  <button
+    onClick={() => router.push('/admin')}
+    className="px-4 py-2 rounded border font-semibold"
+    style={{ borderColor: ACCENT_COLOR, color: ACCENT_COLOR }}
+  >
+    Назад
+  </button>
+
+  {/* Блок с кнопками справа */}
+  <div className="ml-auto flex gap-2">
+    {/* Mobile menu button */}
+    <div className="md:hidden">
+      <UserSidebar
+        user={selectedUser}
+        profile={selectedProfile}
+        isAdmin={profile?.role === 'admin'}
+      />
+    </div>
+
+    {/* Logout button on desktop */}
+    <button
+      onClick={handleLogout}
+      className="hidden md:block px-4 py-2 rounded border font-semibold"
+      style={{ borderColor: ACCENT_COLOR, color: ACCENT_COLOR }}
+    >
+      Выйти
+    </button>
+    </div>
         </div>
         <UserDashboard user={selectedUser} isAdmin={true} profile={selectedProfile} />
       </div>
@@ -198,7 +208,7 @@ export default function AdminPage() {
             className="px-4 py-2 rounded border font-semibold"
             style={{ borderColor: ACCENT_COLOR, color: ACCENT_COLOR }}
           >
-            ← Назад
+          Назад
           </button>
           <button
             onClick={handleLogout}
