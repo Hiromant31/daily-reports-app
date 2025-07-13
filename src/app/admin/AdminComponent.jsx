@@ -5,7 +5,8 @@ import { supabase } from '@/lib/supabaseClient'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import Link from 'next/link'
-import UserDashboard from '@/components/UserDashboard' // путь подкорректируй
+import UserDashboard from '@/components/UserDashboard'
+import UserSidebar from '@/components/UserSidebar'
 
 const ACCENT_COLOR = '#e53740'
 
@@ -15,55 +16,52 @@ export default function AdminPage() {
   const selectedUserId = searchParams.get('id')
 
   const [user, setUser] = useState(null)
+  const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [reports, setReports] = useState([])
   const [groupedReports, setGroupedReports] = useState({})
-  const [activeTab, setActiveTab] = useState('seller')
-  const [range, setRange] = useState('week')
-
-  // Для выбранного сотрудника
   const [selectedUser, setSelectedUser] = useState(null)
   const [selectedProfile, setSelectedProfile] = useState(null)
   const [profileLoading, setProfileLoading] = useState(false)
+  const [range, setRange] = useState('week')
 
-const loadReports = async (range) => {
-  setLoading(true)
+  const loadReports = async (range) => {
+    setLoading(true)
 
-  const today = new Date()
-  let fromDate = new Date()
+    const today = new Date()
+    let fromDate = new Date()
 
-  switch (range) {
-    case 'week': fromDate.setDate(today.getDate() - 7); break
-    case 'month': fromDate.setMonth(today.getMonth() - 1); break
-    case 'day': fromDate = new Date(); break
-    case 'year': fromDate.setFullYear(today.getFullYear() - 1); break
-    default: fromDate = new Date(0)
-  }
-
-  const fromISO = fromDate.toISOString().split('T')[0]
-
-  const { data, error } = await supabase
-    .from('reports')
-    .select(`*, profile: user_id (id, email, first_name, last_name, avatar_url, phone, role)`)
-    .gte('date', fromISO)
-    .order('date', { ascending: false })
-
-  if (error) {
-    alert('Ошибка загрузки отчетов: ' + error.message)
-    console.error(error)
-  } else {
-    const grouped = {}
-    for (const report of data) {
-      if (!grouped[report.user_id]) grouped[report.user_id] = []
-      grouped[report.user_id].push(report)
+    switch (range) {
+      case 'week': fromDate.setDate(today.getDate() - 7); break
+      case 'month': fromDate.setMonth(today.getMonth() - 1); break
+      case 'day': fromDate = new Date(); break
+      case 'year': fromDate.setFullYear(today.getFullYear() - 1); break
+      default: fromDate = new Date(0)
     }
-    setReports(data)
-    setGroupedReports(grouped)
+
+    const fromISO = fromDate.toISOString().split('T')[0]
+
+    const { data, error } = await supabase
+      .from('reports')
+      .select(`*, profile: user_id (id, email, first_name, last_name, avatar_url, phone, role)`)
+      .gte('date', fromISO)
+      .order('date', { ascending: false })
+
+    if (error) {
+      alert('Ошибка загрузки отчетов: ' + error.message)
+      console.error(error)
+    } else {
+      const grouped = {}
+      for (const report of data) {
+        if (!grouped[report.user_id]) grouped[report.user_id] = []
+        grouped[report.user_id].push(report)
+      }
+      setReports(data)
+      setGroupedReports(grouped)
+    }
+
+    setLoading(false)
   }
-
-  setLoading(false)
-}
-
 
   useEffect(() => {
     const fetchUserAndReports = async () => {
@@ -78,12 +76,24 @@ const loadReports = async (range) => {
       }
 
       setUser(user)
+
+      const { data: profileData, error: profileError } = await supabase
+        .from('profiles')
+        .select('*')
+        .eq('id', user.id)
+        .single()
+
+      if (profileError) {
+        console.error('Ошибка загрузки профиля:', profileError)
+      } else {
+        setProfile(profileData)
+      }
+
       await loadReports(range)
-      setLoading(false)
     }
+
     fetchUserAndReports()
   }, [router, range])
-
 
   useEffect(() => {
     if (!selectedUserId) {
@@ -117,10 +127,6 @@ const loadReports = async (range) => {
     fetchSelectedUserAndProfile()
   }, [selectedUserId])
 
-  const onRangeChange = (e) => {
-    setRange(e.target.value)
-  }
-
   const getLastReportDate = (userId) => {
     const userReports = groupedReports[userId] || []
     if (!userReports.length) return null
@@ -133,7 +139,6 @@ const loadReports = async (range) => {
     return target.toDateString() !== today.toDateString()
   }
 
-  // Выход из аккаунта
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/login')
@@ -145,10 +150,10 @@ const loadReports = async (range) => {
     if (profileLoading || !selectedUser || !selectedProfile) {
       return <div className="p-4 text-gray-600">Загрузка профиля пользователя...</div>
     }
+
     return (
       <div className="min-h-screen bg-white text-gray-600 p-6">
         <div className="mb-6 flex justify-between items-center">
-          {/* Кнопка назад — убирает id из URL, возвращает к списку */}
           <button
             onClick={() => router.push('/admin')}
             className="px-4 py-2 rounded border font-semibold"
@@ -157,23 +162,30 @@ const loadReports = async (range) => {
             ← Назад
           </button>
 
-          {/* Кнопка выхода */}
+          {profile && (
+            <div className="md:hidden">
+              <UserSidebar user={selectedUser}
+    profile={selectedProfile} isAdmin={profile.role === 'admin'} />
+            </div>
+          )}
+
           <button
             onClick={handleLogout}
-            className="px-4 py-2 rounded border font-semibold"
+            className="hidden md:block px-4 py-2 rounded border font-semibold"
             style={{ borderColor: ACCENT_COLOR, color: ACCENT_COLOR }}
           >
             Выйти
           </button>
         </div>
-        <div className=''>
+
         <UserDashboard user={selectedUser} isAdmin={true} profile={selectedProfile} />
-      </div>
       </div>
     )
   }
 
-  const uniqueProfiles = Object.values(groupedReports).map(reports => reports[0]?.profile).filter(Boolean)
+  const uniqueProfiles = Object.values(groupedReports)
+    .map(reports => reports[0]?.profile)
+    .filter(Boolean)
 
   return (
     <motion.div className="min-h-screen bg-white text-gray-600 p-6">
@@ -203,10 +215,7 @@ const loadReports = async (range) => {
           const lastDate = getLastReportDate(profile.id)
           return (
             <Link key={profile.id} href={`/admin?id=${profile.id}`} legacyBehavior>
-              <a
-                className="block bg-gray-100 rounded-lg p-4 shadow-sm transition hover:shadow-md hover:bg-[#fce7e7]"
-                style={{ color: '#4b5563' /* gray-600 */ }}
-              >
+              <a className="block bg-gray-100 rounded-lg p-4 shadow-sm transition hover:shadow-md hover:bg-[#fce7e7]">
                 <div className="flex items-center gap-4 mb-2">
                   <div
                     className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-white select-none"

@@ -7,6 +7,7 @@ import ActivityChart from '@/components/ActivityChart'
 import { supabase } from '@/lib/supabaseClient'
 import EditProfileForm from '@/components/EditProfileForm'
 import ReportFormModal from '@/components/ReportFormModal'
+import UserSidebar from '@/components/UserSidebar'
 
 import { AnimatePresence, motion } from 'framer-motion'
 
@@ -149,66 +150,15 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
 
   return (
     <main className="max-w-4xl mx-auto mt-8 p-4 bg-white rounded shadow relative">
-      <AnimatePresence>
-        {showSettings && isAdmin && (
-          <motion.div
-            key="modal"
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-          >
-            <div className="bg-white p-6 rounded shadow max-w-lg w-full relative">
-              <button
-                onClick={closeSettings}
-                className="absolute top-2 right-2 text-gray-500 hover:text-black text-2xl"
-              >
-                ×
-              </button>
-              <EditProfileForm userId={user?.id} />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      
       {user ? (
         <div className="flex flex-col md:flex-row gap-6">
           {/* Левая часть — профиль */}
-          <div className="w-full md:w-1/3">
-            <div className="flex flex-col items-center">
-              <div className="w-24 h-24 rounded-full bg-[#fbe1e2] flex items-center justify-center text-2xl font-bold text-[#e53740]">
-                {avatarLetter}
-              </div>
-              <h2 className="text-lg font-semibold mt-2 text-center">
-                {profile?.first_name || ''} {profile?.last_name || ''}
-              </h2>
+          
+          <div className="hidden md:block w-full md:w-1/3">
+  <UserSidebar user={user} profile={profile} isAdmin={profile?.role === 'admin'} />
+</div>
 
-              {/* Информация о профиле */}
-              <div className="mt-8 p-4 border-t border-gray-200 text-sm text-gray-600">
-                <h4 className="font-semibold mb-2">Информация о профиле</h4>
-                {profile ? (
-                  <ul>
-                    <li><strong>Email:</strong> {profile.email}</li>
-                    <li><strong>Имя:</strong> {profile.first_name || 'Не указано'}</li>
-                    <li><strong>Фамилия:</strong> {profile.last_name || 'Не указана'}</li>
-                    <li><strong>Телефон:</strong> {profile.phone || 'Не указан'}</li>
-                    <li><strong>Роль:</strong> {getRoleLabel(profile.role)}</li>
-                  </ul>
-                ) : (
-                  <p>Профиль не найден</p>
-                )}
-                          {isAdmin && (
-  <button
-    onClick={() => router.push(`/admin?id=${user.id}&settings`)}
-    className="mt-4 px-4 py-2 text-sm rounded bg-[#e53740] text-white hover:bg-[#c72f35]"
-  >
-    Редактировать профиль
-  </button>
-)}
-
-              </div>
-            </div>
-          </div>
 
           {/* Правая часть — сводка */}
           <div className="w-full md:w-2/3">
