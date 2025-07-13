@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabaseClient'
 import Link from 'next/link'
 import { useSession } from '@supabase/auth-helpers-react'
 import ActivityChart from '@/components/ActivityChart'
-import EditProfileForm from '@/components/EditProfileForm'
+import EditProfileForm from '@/components/EditProfileModal'
 
 
 const MyComponent = () => {

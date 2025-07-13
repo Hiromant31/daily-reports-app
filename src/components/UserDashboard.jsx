@@ -5,7 +5,8 @@ import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
 import ActivityChart from '@/components/ActivityChart'
 import { supabase } from '@/lib/supabaseClient'
-import EditProfileForm from '@/components/EditProfileForm'
+import { useModal } from '@/components/ModalContext'
+import EditProfileModal from '@/components/EditProfileModal'
 import ReportFormModal from '@/components/ReportFormModal'
 import UserSidebar from '@/components/UserSidebar'
 
@@ -21,6 +22,7 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
   const [fromDate, setFromDate] = useState(todayISO)
   const [toDate, setToDate] = useState(todayISO)
   const [reports, setReports] = useState([])
+  const { isModalOpen, closeModal } = useModal()
 
   const [isReportModalOpen, setIsReportModalOpen] = useState(false)
 
@@ -150,17 +152,12 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
 
   return (
     <main className="max-w-4xl mx-auto mt-8 p-4 bg-white rounded shadow relative">
-      
       {user ? (
         <div className="flex flex-col md:flex-row gap-6">
-          {/* Левая часть — профиль */}
-          
           <div className="hidden md:block w-full md:w-1/3">
-  <UserSidebar user={user} profile={profile} isAdmin={profile?.role === 'admin'} />
-</div>
+            <UserSidebar user={user} profile={profile} isAdmin={isAdmin} />
+          </div>
 
-
-          {/* Правая часть — сводка */}
           <div className="w-full md:w-2/3">
             {/* Вкладки */}
             <div className="flex mb-4 border-b">
@@ -273,13 +270,16 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
   onClick={() => setIsReportModalOpen(true)}
   className="mt-6 inline-block bg-[#e53740] text-white px-4 py-2 rounded hover:bg-[#f19196]"
 >
-  Заполнить отчет
+  Отчеты
 </button>
 {isReportModalOpen && (
   <ReportFormModal user={user} isAdmin={isAdmin} profile={profile} onClose={() => setIsReportModalOpen(false)} />
 )}
 
               </>
+            )}
+            {isModalOpen && (
+              <EditProfileModal userId={user.id} />
             )}
           </div>
         </div>

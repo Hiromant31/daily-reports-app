@@ -5,31 +5,14 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { supabase } from '@/lib/supabaseClient'
 
 export default function ReportFormModal({ user, profile, onClose, isAdmin = false }) {
-  
   const [open, setOpen] = useState(false)
-
-  const toggle = () => setOpen(!open)
-
-  const close = () => setOpen(false)
+  const toggle = () => setOpen(prev => !prev)
 
   const [form, setForm] = useState({
-    calls_sellers: '',
-    calls_buyers: '',
-    stickers: '',
-    banners: '',
-    statuses: '',
-    incoming_calls: '',
-    meetings_sellers: '',
-    meetings_buyers: '',
-    contracts_sellers: '',
-    contracts_buyers: '',
-    sma_analytics: '',
-    showings_buyers: '',
-    showings_sellers: '',
-    objects_uploaded: '',
-    pro_photos: '',
-    price_reductions: '',
-    sum_price_reduction: '',
+    calls_sellers: '', calls_buyers: '', stickers: '', banners: '', statuses: '',
+    incoming_calls: '', meetings_sellers: '', meetings_buyers: '', contracts_sellers: '',
+    contracts_buyers: '', sma_analytics: '', showings_buyers: '', showings_sellers: '',
+    objects_uploaded: '', pro_photos: '', price_reductions: '', sum_price_reduction: '',
   })
   const [loading, setLoading] = useState(true)
   const [hasSetReport, setHasSetReport] = useState(false)
@@ -37,7 +20,9 @@ export default function ReportFormModal({ user, profile, onClose, isAdmin = fals
   const [reportsList, setReportsList] = useState([])
   const [selectedReportIndex, setSelectedReportIndex] = useState(0)
 
-  function loadFormFromData(data) {
+  const dropdownRef = useRef(null)
+
+  const loadFormFromData = (data) => {
     setForm({
       calls_sellers: data.calls_sellers?.toString() || '',
       calls_buyers: data.calls_buyers?.toString() || '',
@@ -59,10 +44,46 @@ export default function ReportFormModal({ user, profile, onClose, isAdmin = fals
     })
   }
 
+  const fetchReports = async () => {
+    setLoading(true)
+    if (!isAdmin) {
+      const { data } = await supabase
+        .from('reports')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('date', selectedDate)
+        .in('status', ['set', 'edit', 'ready'])
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .single()
 
-  const dropdownRef = useRef(null)
+      if (data) {
+        loadFormFromData(data)
+        setHasSetReport(data.status === 'set')
+      }
+    } else {
+      const { data } = await supabase
+        .from('reports')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('date', selectedDate)
+        .order('created_at', { ascending: true })
 
-  // Закрывать меню при клике вне
+      if (data) {
+        setReportsList(data)
+        if (data.length > 0) {
+          loadFormFromData(data[0])
+          setSelectedReportIndex(0)
+        }
+      }
+    }
+    setLoading(false)
+  }
+
+  useEffect(() => {
+    fetchReports()
+  }, [selectedDate, user.id, isAdmin])
+
   useEffect(() => {
     function handleClickOutside(event) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
@@ -79,52 +100,6 @@ export default function ReportFormModal({ user, profile, onClose, isAdmin = fals
     }
   }, [open])
 
-  // Обработчик "Изменить" из выпадающего меню
-  const handleSubmitDropdown = async () => {
-    await handleSubmit(new Event('submit')) // эмулируем submit
-    setOpen(false)
-  }
-
-
-  useEffect(() => {
-    async function fetchReports() {
-      setLoading(true)
-      if (!isAdmin) {
-        const { data, error } = await supabase
-          .from('reports')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('date', selectedDate)
-          .in('status', ['set', 'edit', 'ready'])
-          .order('created_at', { ascending: false })
-          .limit(1)
-          .single()
-
-        if (data) {
-          loadFormFromData(data)
-          setHasSetReport(data.status === 'set')
-        }
-      } else {
-        const { data, error } = await supabase
-          .from('reports')
-          .select('*')
-          .eq('user_id', user.id)
-          .eq('date', selectedDate)
-          .order('created_at', { ascending: true })
-
-        if (data) {
-          setReportsList(data)
-          if (data.length > 0) {
-            loadFormFromData(data[0])
-            setSelectedReportIndex(0)
-          }
-        }
-      }
-      setLoading(false)
-    }
-    fetchReports()
-  }, [selectedDate, user.id, isAdmin])
-
   const handleChange = (field, value) => {
     if (/^\d*$/.test(value)) {
       setForm(prev => ({ ...prev, [field]: value }))
@@ -132,87 +107,79 @@ export default function ReportFormModal({ user, profile, onClose, isAdmin = fals
   }
 
   const handleSubmit = async (e) => {
-  e.preventDefault()
-  const cleanData = Object.fromEntries(Object.entries(form).map(([key, value]) => [key, parseInt(value) || 0]))
+    e.preventDefault()
+    const cleanData = Object.fromEntries(Object.entries(form).map(([key, value]) => [key, parseInt(value) || 0]))
+    const currentReport = reportsList[selectedReportIndex]
 
-  // Получаем текущий выбранный отчет (если есть)
-  const currentReport = reportsList[selectedReportIndex]
+    if (currentReport) {
+      const { error } = await supabase
+        .from('reports')
+        .update({ ...cleanData, status: currentReport.status })
+        .eq('id', currentReport.id)
 
-  if (currentReport) {
-    // Обновляем существующий отчет
-    const { error } = await supabase
-      .from('reports')
-      .update({ ...cleanData, status: currentReport.status })
-      .eq('id', currentReport.id)
-
-    if (error) {
-      alert('Ошибка при обновлении отчета')
+      if (error) {
+        alert('Ошибка при обновлении отчета')
+      } else {
+        alert('Отчет обновлен')
+        await fetchReports()
+      }
     } else {
-      alert('Отчет обновлен')
-      onClose?.()
-      // Обновляем локальный список отчетов и форму
-      const updatedReports = [...reportsList]
-      updatedReports[selectedReportIndex] = { ...currentReport, ...cleanData }
-      setReportsList(updatedReports)
-    }
-  } else {
-    // Если отчета нет, создаём новый
-    const status = hasSetReport ? 'edit' : 'set'
-    const { error } = await supabase.from('reports').insert({
-      ...cleanData,
-      date: selectedDate,
-      user_id: user.id,
-      status,
-    })
+      const status = hasSetReport ? 'edit' : 'set'
+      const { error } = await supabase.from('reports').insert({
+        ...cleanData,
+        date: selectedDate,
+        user_id: user.id,
+        status,
+      })
 
-    if (error) {
-      alert('Ошибка при сохранении отчета')
-    } else {
-      alert(status === 'set' ? 'Отчет сохранен' : 'Отчет изменён')
-      onClose?.()
+      if (error) {
+        alert('Ошибка при сохранении отчета')
+      } else {
+        alert(status === 'set' ? 'Отчет сохранен' : 'Отчет изменён')
+        await fetchReports()
+      }
     }
   }
-}
 
   const handleUpdateStatus = async (status) => {
-  const report = reportsList[selectedReportIndex]
-  if (!report) return alert('Отчет не выбран')
+    const report = reportsList[selectedReportIndex]
+    if (!report) return alert('Отчет не выбран')
 
-  if (status === 'ready') {
-    const { data } = await supabase
-      .from('reports')
-      .select('id')
-      .eq('date', selectedDate)
-      .eq('status', 'ready')
+    if (status === 'ready') {
+      const { data } = await supabase
+        .from('reports')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('date', selectedDate)
+        .eq('status', 'ready')
 
-    if (data.length > 0) return alert('Уже есть подтвержденный отчет за эту дату')
+      if (data.length > 0) return alert('Уже есть подтвержденный отчет за эту дату')
+    }
+
+    const { error } = await supabase.from('reports').update({ status }).eq('id', report.id)
+
+    if (error) {
+      alert('Ошибка при изменении статуса')
+    } else {
+      alert(`Статус изменен на ${status}`)
+      await fetchReports()
+    }
   }
 
-  const { error } = await supabase.from('reports').update({ status }).eq('id', report.id)
-
-  if (error) {
-    alert('Ошибка при изменении статуса')
-  } else {
-    alert(`Статус изменен на ${status}`)
-
-    // Обновляем локально
-    const updatedReports = [...reportsList]
-    updatedReports[selectedReportIndex] = { ...report, status }
-    setReportsList(updatedReports)
-
-    // Обновляем состояние формы
-    loadFormFromData(updatedReports[selectedReportIndex])
+  const handleSubmitDropdown = async () => {
+    await handleSubmit(new Event('submit'))
+    setOpen(false)
   }
-}
 
   if (loading) return null
+
   const userName = profile?.first_name || 'Пользователь'
   const userInitial = profile?.last_name?.[0] || ''
 
   return (
     <AnimatePresence>
-      <motion.div key="modal" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2 }} className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-6 pt-0 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <motion.div key="modal" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.2 }} className="fixed inset-0 z-50 backdrop-blur-md bg-opacity-90 flex items-center justify-center p-4">
+        <div className="bg-white rounded-lg shadow-xl/20 p-6 pt-0 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
           <div className="sticky top-0 bg-white z-10 pt-6 pb-2 mb-4 flex justify-between items-center">
             <span className="text-sm text-[#e53740] font-semibold">{userName} {userInitial && userInitial + '.'}</span>
             <h2 className="text-xl font-bold text-[#e53740]">Ежедневный отчет</h2>
@@ -232,17 +199,19 @@ export default function ReportFormModal({ user, profile, onClose, isAdmin = fals
       const isSelected = selectedReportIndex === idx
 
       const statusColor =
-        r.status === 'ready'
-          ? 'border-green-500 bg-green-500'
-          : r.status === 'trash'
-          ? 'border-red-500 bg-red-500'
-          : r.status === 'edit'
-          ? 'border-orange-400 bg-orange-400'
-          :  r.status === 'set'
-          ?  'border-orange-400 bg-orange-00'
-          : 'border-gray-600 bg-gray-600'
+  r.status === 'ready'
+    ? 'border-green-500 bg-green-500'
+    : r.status === 'trash'
+    ? 'border-red-500 bg-red-500'
+    : r.status === 'edit'
+    ? 'border-orange-400 bg-orange-400'
+    : r.status === 'set'
+    ? 'border-orange-400 bg-orange-400'
+    : 'border-gray-600 bg-gray-600'
 
-      const bgColor = isSelected ? 'text-white' : 'bg-white text-black'
+const bgColor = isSelected
+  ? statusColor.replace(/border-[\w-]+\s/, '') + ' text-white'
+  : 'bg-white text-black'
 
       return (
         <button
@@ -299,7 +268,7 @@ export default function ReportFormModal({ user, profile, onClose, isAdmin = fals
       <button
         type="button"
         onClick={toggle}
-        className="text-sm px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+        className="text-sm px-4 py-2 bg-[#e53740] text-white rounded hover:bg-[#b51720]"
       >
         Действия
       </button>

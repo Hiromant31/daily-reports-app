@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import {Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono } from "next/font/google";
 import { Rubik } from 'next/font/google'
+import { ModalProvider } from '@/components/ModalContext'; // Импортируем провайдер для модалки
 import "./globals.css";
 import "./register/RegisterPage.module.css";
 
-
+// Инициализация шрифтов
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -19,7 +20,7 @@ const rubik = Rubik({
   subsets: ['latin', 'cyrillic'],
   weight: ['400', '500', '700'], // только нужные веса
   variable: '--font-rubik',
-})
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -36,7 +37,10 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${rubik.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        {/* Оборачиваем приложение в ModalProvider */}
+        <ModalProvider>
+          {children}
+        </ModalProvider>
       </body>
     </html>
   );

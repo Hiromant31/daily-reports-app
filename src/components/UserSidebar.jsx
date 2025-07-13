@@ -2,13 +2,15 @@
 
 import { useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
-import EditProfileForm from '@/components/EditProfileForm'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { supabase } from '@/lib/supabaseClient'
+import { useModal } from '@/components/ModalContext'; // Импортируем компонент редактирования профиля
 
 export default function UserSidebar({ user, profile, isAdmin }) {
   const [menuOpen, setMenuOpen] = useState(false)
-  const [showSettings, setShowSettings] = useState(false)
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false) // Состояние для открытия модалки редактирования
   const router = useRouter()
+  const { openModal } = useModal();
   const searchParams = useSearchParams()
 
   const avatarLetter = user?.email?.[0]?.toUpperCase() || '?' // Без useEffect для упрощения
@@ -22,7 +24,7 @@ export default function UserSidebar({ user, profile, isAdmin }) {
     }
   }
 
-  const closeSettings = () => setShowSettings(false)
+  const closeEditProfile = () => setIsEditProfileOpen(false) // Функция для закрытия модалки
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
@@ -32,87 +34,91 @@ export default function UserSidebar({ user, profile, isAdmin }) {
   return (
     <>
       {/* Мобильная кнопка для меню */}
-      <div className="md:hidden flex justify-between items-center px-4 py-2 bg-white border-b">
-        <button onClick={() => setMenuOpen(true)} className="text-xl font-bold text-red-600">
-          ☰
-        </button>
-      </div>
+      <div className="md:hidden flex items-center justify-between px-4 py-2 bg-white w-full">
+  {/* Имя слева */}
+  <p className="w-full text-xl font-bold text-[#e53740]">{profile?.first_name} {profile?.last_name}</p>
 
-     <AnimatePresence>
-  {menuOpen && (
-    <>
-      {/* Блюрный фон — не двигается, просто появляется */}
-      <motion.div
-        className="fixed inset-0 z-40 bg-opacity-40 backdrop-blur-sm"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        onClick={() => setMenuOpen(false)}
-      />
+  {/* Кнопка ☰ справа */}
+  <button onClick={() => setMenuOpen(true)} className="text-xl font-bold text-red-600">
+    ☰
+  </button>
+</div>
 
-      {/* Выезжающая справа панель */}
-      <motion.div
-        initial={{ x: '100%' }}
-        animate={{ x: 0 }}
-        exit={{ x: '100%' }}
-        transition={{ duration: 0.3 }}
-        className="fixed top-0 right-0 z-50 w-[70%] min-w-64 max-w-96 h-full bg-white shadow-lg p-4 md:hidden"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold">Профиль</h2>
-          <button onClick={() => setMenuOpen(false)} className="text-2xl">×</button>
-        </div>
 
-        <div className="mt-4 text-center">
-          <div className="w-20 h-20 rounded-full bg-[#fbe1e2] flex items-center justify-center text-2xl font-bold text-[#e53740] mx-auto">
-            {avatarLetter}
-          </div>
-          <p className="mt-2 font-medium">{profile?.first_name} {profile?.last_name}</p>
-          <p className="text-sm text-gray-500">{getRoleLabel(profile?.role)}</p>
-        </div>
 
-        <ul className="mt-6 text-sm space-y-2">
-          <li><strong>Email:</strong> {profile?.email}</li>
-          <li><strong>Телефон:</strong> {profile?.phone || 'Не указан'}</li>
-        </ul>
-
-        {isAdmin && (
+      <AnimatePresence>
+        {menuOpen && (
           <>
-            <button
-              onClick={() => {
-                setShowSettings(true)
-                setMenuOpen(false)
-              }}
-              className="mt-4 w-full text-left px-4 py-2 text-sm rounded bg-[#e53740] text-white hover:bg-[#c72f35]"
-            >
-              Редактировать профиль
-            </button>
+            {/* Блюрный фон — не двигается, просто появляется */}
+            <motion.div
+              className="fixed inset-0 z-40 bg-opacity-40 backdrop-blur-sm"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setMenuOpen(false)}
+            />
 
-            <button
-              onClick={() => router.push('/admin')}
-              className="mt-4 w-full text-left px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+            {/* Выезжающая справа панель */}
+            <motion.div
+              initial={{ x: '100%' }}
+              animate={{ x: 0 }}
+              exit={{ x: '100%' }}
+              transition={{ duration: 0.3 }}
+              className="fixed top-0 right-0 z-50 w-[70%] min-w-64 max-w-96 h-full bg-white shadow-lg p-4 md:hidden"
+              onClick={(e) => e.stopPropagation()}
             >
-              Админ панель
-            </button>
+              <div className="flex items-center justify-between">
+                <h2 className="text-lg font-semibold">Профиль</h2>
+                <button onClick={() => setMenuOpen(false)} className="text-2xl">×</button>
+              </div>
+
+              <div className="mt-4 text-center">
+                <div className="w-20 h-20 rounded-full bg-[#fbe1e2] flex items-center justify-center text-2xl font-bold text-[#e53740] mx-auto">
+                  {avatarLetter}
+                </div>
+                <p className="mt-2 font-medium">{profile?.first_name} {profile?.last_name}</p>
+                <p className="text-sm text-gray-500">{getRoleLabel(profile?.role)}</p>
+              </div>
+
+              <ul className="mt-6 text-sm space-y-2">
+                <li><strong>Email:</strong> {profile?.email}</li>
+                <li><strong>Телефон:</strong> {profile?.phone || 'Не указан'}</li>
+              </ul>
+
+              {/* Добавляем проверку isAdmin для мобильной версии */}
+              {isAdmin && (
+                <>
+                  {/* Кнопка "Редактировать профиль", открывающая модалку */}
+                  <button
+                    onClick={openModal} // Открываем модалку
+                    className="mt-4 w-full text-left px-4 py-2 text-sm rounded bg-[#e53740] text-white hover:bg-[#c72f35]"
+                  >
+                    Редактировать профиль
+                  </button>
+
+                  <button
+                    onClick={() => router.push('/admin')}
+                    className="mt-4 w-full text-left px-4 py-2 text-sm rounded bg-blue-600 text-white hover:bg-blue-700"
+                  >
+                    Админ панель
+                  </button>
+                </>
+              )}
+
+              <button
+                onClick={handleLogout}
+                className="mt-4 w-full text-left px-4 py-2 text-sm rounded bg-[#e53740] text-white hover:bg-[#c72f35]"
+              >
+                Выйти
+              </button>
+            </motion.div>
           </>
         )}
+      </AnimatePresence>
 
-        <button
-          onClick={handleLogout}
-          className="mt-4 w-full text-left px-4 py-2 text-sm rounded bg-[#e53740] text-white hover:bg-[#c72f35]"
-        >
-          Выйти
-        </button>
-      </motion.div>
-    </>
-  )}
-</AnimatePresence>
-
-
-      {/* Настройки профиля */}
+      {/* Модалка редактирования профиля */}
       <AnimatePresence>
-        {showSettings && isAdmin && (
+        {isEditProfileOpen && (
           <motion.div
             key="modal"
             initial={{ opacity: 0, scale: 0.95 }}
@@ -123,61 +129,65 @@ export default function UserSidebar({ user, profile, isAdmin }) {
           >
             <div className="bg-white p-6 rounded shadow max-w-lg w-full relative">
               <button
-                onClick={closeSettings}
+                onClick={closeEditProfile} // Закрываем модалку
                 className="absolute top-2 right-2 text-gray-500 hover:text-black text-2xl"
               >
                 ×
               </button>
-              <EditProfileForm userId={user?.id} />
+              <EditProfileForm userId={user?.id} /> {/* Рендерим форму редактирования профиля */}
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Стационарный блок для десктопа */}
-<div className="hidden md:block">
-  <div className="flex flex-col items-center">
-    <div className="w-24 h-24 rounded-full bg-[#fbe1e2] flex items-center justify-center text-2xl font-bold text-[#e53740]">
-      {avatarLetter}
-    </div>
-    <h2 className="text-lg font-semibold mt-2 text-center">
-      {profile?.first_name || ''} {profile?.last_name || ''}
-    </h2>
+      <div className="hidden md:block">
+        <div className="flex flex-col items-center">
+          <div className="w-24 h-24 rounded-full bg-[#fbe1e2] flex items-center justify-center text-2xl font-bold text-[#e53740]">
+            {avatarLetter}
+          </div>
+          <h2 className="text-lg font-semibold mt-2 text-center">
+            {profile?.first_name || ''} {profile?.last_name || ''}
+          </h2>
 
-    {/* Информация о профиле */}
-    <div className="mt-8 p-4 border-t border-gray-200 text-sm text-gray-600 w-full">
-      <h4 className="font-semibold mb-2">Информация о профиле</h4>
-      {profile ? (
-        <ul>
-          <li><strong>Email:</strong> {profile.email}</li>
-          <li><strong>Имя:</strong> {profile.first_name || 'Не указано'}</li>
-          <li><strong>Фамилия:</strong> {profile.last_name || 'Не указана'}</li>
-          <li><strong>Телефон:</strong> {profile.phone || 'Не указан'}</li>
-          <li><strong>Роль:</strong> {getRoleLabel(profile.role)}</li>
-        </ul>
-      ) : (
-        <p>Профиль не найден</p>
-      )}
-      {isAdmin && (
-        <>
-          <button
-            onClick={() => setShowSettings(true)}
-            className="mt-4 w-full text-left px-4 py-2 text-sm rounded bg-[#e53740] text-white hover:bg-[#c72f35]"
-          >
-            Редактировать профиль
-          </button>
-          <button
-            onClick={() => router.push('/admin')}
-            className="mt-4 w-full text-left px-4 py-2 text-sm rounded bg-[#3b82f6] text-white hover:bg-[#2563eb]"
-          >
-            Админ панель
-          </button>
-        </>
-      )}
-    </div>
-  </div>
-</div>
+          {/* Информация о профиле */}
+          <div className="mt-8 p-4 border-t border-gray-200 text-sm text-gray-600 w-full">
+            <h4 className="font-semibold mb-2">Информация о профиле</h4>
+            {profile ? (
+              <ul>
+                <li><strong>Email:</strong> {profile.email}</li>
+                <li><strong>Имя:</strong> {profile.first_name || 'Не указано'}</li>
+                <li><strong>Фамилия:</strong> {profile.last_name || 'Не указана'}</li>
+                <li><strong>Телефон:</strong> {profile.phone || 'Не указан'}</li>
+                <li><strong>Роль:</strong> {getRoleLabel(profile.role)}</li>
+              </ul>
+            ) : (
+              <p>Профиль не найден</p>
+            )}
+            
+            {/* Добавляем проверку isAdmin для десктопной версии */}
+            {isAdmin && (
+              <>
+                {/* Кнопка "Редактировать профиль" */}
+                <button
+                  onClick={openModal} // Открываем модалку
+                  className="mt-4 w-full text-left px-4 py-2 text-sm rounded bg-[#e53740] text-white hover:bg-[#c72f35]"
+                >
+                  Редактировать профиль
+                </button>
 
+                {/* Кнопка "Админ панель" */}
+                <button
+                  onClick={() => router.push('/admin')}
+                  className="mt-4 w-full text-left px-4 py-2 text-sm rounded bg-[#3b82f6] text-white hover:bg-[#2563eb]"
+                >
+                  Админ панель
+                </button>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
     </>
   )
 }

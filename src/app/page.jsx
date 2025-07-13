@@ -50,21 +50,23 @@ export default function DashboardPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 text-gray-800">
-      {/* Шапка */}
-      <header className="bg-white shadow-md px-6 py-4 flex justify-end items-center">
-          <div className="flex items-center gap-2">
-    {/* Показываем только на мобильных */}
-    <div className="md:hidden">
+    <div>
+        <header className="bg-white shadow-md px-4 py-3 flex items-center justify-between w-full">
+  {/* Левая часть */}
+  <div className="flex items-center gap-2 w-full">
+    {/* На мобильных — модуль с кнопкой меню (внутри — имя и кнопка ☰) */}
+    <div className="md:hidden w-full">
       <UserSidebar user={user} profile={profile} isAdmin={profile?.role === 'admin'} />
     </div>
-    <div className='hidden md:block'>
-    <button
-      className="text-sm text-red-600 hover:underline"
-      onClick={handleLogout}
-    >
-      Выйти
-    </button>
+
+    {/* На десктопе — кнопка выйти */}
+    <div className="hidden md:block">
+      <button
+        className="text-sm text-red-600 hover:underline"
+        onClick={handleLogout}
+      >
+        Выйти
+      </button>
     </div>
   </div>
 </header>
