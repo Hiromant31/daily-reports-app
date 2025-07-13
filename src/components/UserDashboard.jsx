@@ -326,7 +326,7 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
   Заполнить отчет
 </button>
 {isReportModalOpen && (
-  <ReportFormModal user={user} profile={profile} onClose={() => setIsReportModalOpen(false)} />
+  <ReportFormModal user={user} isAdmin={isAdmin} profile={profile} onClose={() => setIsReportModalOpen(false)} />
 )}
 
               </>
