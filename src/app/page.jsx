@@ -1,5 +1,7 @@
 'use client'
+
 import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import { supabase } from '@/lib/supabaseClient'
 import UserDashboard from '@/components/UserDashboard'
 
@@ -7,6 +9,7 @@ export default function DashboardPage() {
   const [user, setUser] = useState(null)
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
+  const router = useRouter()
 
   useEffect(() => {
     const fetchUserAndProfile = async () => {
@@ -20,9 +23,6 @@ export default function DashboardPage() {
           .eq('id', user.id)
           .single()
         if (!error) setProfile(profileData)
-      } else {
-        setUser(null)
-        setProfile(null)
       }
       setLoading(false)
     }
@@ -30,13 +30,20 @@ export default function DashboardPage() {
     fetchUserAndProfile()
   }, [])
 
+  // Перенаправление, если пользователь не авторизован
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login')
+    }
+  }, [loading, user])
+
   const handleLogout = async () => {
     await supabase.auth.signOut()
     location.reload()
   }
 
-  if (loading) {
-    return <div className="p-6 text-center">Загрузка пользователя...</div>
+  if (loading || !user) {
+    return <div className="p-6 text-center">Загрузка...</div>
   }
 
   return (
@@ -64,12 +71,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* Контент */}
-      {user ? (
-        <UserDashboard user={user} profile={profile} />
-      ) : (
-        <div className="p-6 text-center">Пользователь не авторизован</div>
-      )}
+      <UserDashboard user={user} profile={profile} />
     </div>
   )
 }

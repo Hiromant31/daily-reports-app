@@ -6,7 +6,12 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import ActivityChart from '@/components/ActivityChart'
 import { supabase } from '@/lib/supabaseClient'
 import EditProfileForm from '@/components/EditProfileForm'
+import ReportFormModal from '@/components/ReportFormModal'
+
 import { AnimatePresence, motion } from 'framer-motion'
+
+
+
 
 export default function UserDashboard({ user, isAdmin = false, profile: initialProfile }) {
   const [profile, setProfile] = useState(initialProfile)
@@ -18,6 +23,8 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
   const [fromDate, setFromDate] = useState(todayISO)
   const [toDate, setToDate] = useState(todayISO)
   const [reports, setReports] = useState([])
+
+  const [isReportModalOpen, setIsReportModalOpen] = useState(false)
 
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -299,12 +306,16 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
                 </div>
 
                 {/* Кнопка заполнить отчет */}
-                <Link
-                  href="/report"
-                  className="mt-6 inline-block bg-[#e53740] text-white px-4 py-2 rounded hover:bg-[#f19196]"
-                >
-                  Заполнить отчет
-                </Link>
+                <button
+  onClick={() => setIsReportModalOpen(true)}
+  className="mt-6 inline-block bg-[#e53740] text-white px-4 py-2 rounded hover:bg-[#f19196]"
+>
+  Заполнить отчет
+</button>
+{isReportModalOpen && (
+  <ReportFormModal user={user} profile={profile} onClose={() => setIsReportModalOpen(false)} />
+)}
+
               </>
             )}
           </div>
@@ -313,5 +324,7 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
         <p>Загрузка пользователя...</p>
       )}
     </main>
+    
   )
 }
+
