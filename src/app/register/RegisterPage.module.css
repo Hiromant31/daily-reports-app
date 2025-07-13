@@ -22,6 +22,3 @@
 .tabButton:hover {
   @apply text-indigo-600;
 }
-
-/*       <div className="text-red-500 max-w-md mx-auto p-4 flex flex-col items-center text-center text-[48px]">АЯКС
-      </div>
