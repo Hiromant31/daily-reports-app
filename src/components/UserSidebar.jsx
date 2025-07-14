@@ -13,7 +13,7 @@ export default function UserSidebar({ user, profile, isAdmin }) {
   const { openModal } = useModal();
   const searchParams = useSearchParams()
 
-  const avatarLetter = user?.email?.[0]?.toUpperCase() || '?' // Без useEffect для упрощения
+  const avatarLetter = profile?.first_name?.[0]?.toUpperCase() || '?' // Без useEffect для упрощения
 
   const getRoleLabel = (role) => {
     switch (role) {
@@ -36,10 +36,10 @@ export default function UserSidebar({ user, profile, isAdmin }) {
       {/* Мобильная кнопка для меню */}
       <div className="md:hidden flex items-center justify-between px-4 py-2 bg-white w-full">
   {/* Имя слева */}
-  <p className="w-full text-xl relative mr-30 font-bold text-[#e53740]">{profile?.first_name} {profile?.last_name}</p>
+  <p className="w-full text-2xl relative mr-30 font-bold text-[#e53740]">{profile?.first_name} {profile?.last_name}</p>
 
   {/* Кнопка ☰ справа */}
-  <button onClick={() => setMenuOpen(true)} className="text-xl font-bold text-red-600">
+  <button onClick={() => setMenuOpen(true)} className="text-4xl font-bold text-red-600">
     ☰
   </button>
 </div>
@@ -64,7 +64,7 @@ export default function UserSidebar({ user, profile, isAdmin }) {
               animate={{ x: 0 }}
               exit={{ x: '100%' }}
               transition={{ duration: 0.3 }}
-              className="fixed top-0 right-0 z-50 w-[70%] min-w-64 max-w-96 h-full bg-white shadow-lg p-4 md:hidden"
+              className="fixed top-0 right-0 z-50 rounded-[20px] w-[70%] min-w-64 max-w-96 h-[70%] mr-5 bg-white shadow-lg p-4 md:hidden"
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between">
@@ -73,7 +73,7 @@ export default function UserSidebar({ user, profile, isAdmin }) {
               </div>
 
               <div className="mt-4 text-center">
-                <div className="w-20 h-20 rounded-full bg-[#fbe1e2] flex items-center justify-center text-2xl font-bold text-[#e53740] mx-auto">
+                <div className="w-36 h-36 rounded-full bg-[#fbe1e2] flex items-center justify-center text-5xl font-bold text-[#e53740] mx-auto">
                   {avatarLetter}
                 </div>
                 <p className="mt-2 font-medium">{profile?.first_name} {profile?.last_name}</p>
@@ -143,23 +143,19 @@ export default function UserSidebar({ user, profile, isAdmin }) {
       {/* Стационарный блок для десктопа */}
       <div className="hidden md:block">
         <div className="flex flex-col items-center">
-          <div className="w-24 h-24 rounded-full bg-[#fbe1e2] flex items-center justify-center text-2xl font-bold text-[#e53740]">
+          <div className="w-36 h-36 rounded-full bg-[#fbe1e2] flex items-center justify-center text-5xl font-bold text-[#e53740]">
             {avatarLetter}
           </div>
-          <h2 className="text-lg font-semibold mt-2 text-center">
-            {profile?.first_name || ''} {profile?.last_name || ''}
-          </h2>
 
           {/* Информация о профиле */}
           <div className="mt-8 p-4 border-t border-gray-200 text-sm text-gray-600 w-full">
-            <h4 className="font-semibold mb-2">Информация о профиле</h4>
             {profile ? (
               <ul>
-                <li><strong>Email:</strong> {profile.email}</li>
-                <li><strong>Имя:</strong> {profile.first_name || 'Не указано'}</li>
-                <li><strong>Фамилия:</strong> {profile.last_name || 'Не указана'}</li>
-                <li><strong>Телефон:</strong> {profile.phone || 'Не указан'}</li>
-                <li><strong>Роль:</strong> {getRoleLabel(profile.role)}</li>
+                <li className=''><strong>Имя:</strong><br></br> <div className='text-[20px] text-red-700 font-semibold'> {profile.first_name || 'Не указано'}</div></li>
+                <li><strong>Фамилия:</strong> <br></br> <div className='text-[20px] text-red-700 font-semibold'>{profile.last_name || 'Не указана'}</div></li>
+                <li className='mt-5'><strong className='text-[18px]'>Email:</strong> <br></br> {profile.email}</li>
+                <li className='mt-5'><strong>Телефон:</strong> {profile.phone || 'Не указан'}</li>
+                <li className='mt-5'><strong>Роль:</strong> <br></br> <div className='text-[20px] text-red-700 font-semibold'> {getRoleLabel(profile.role)}</div></li>
               </ul>
             ) : (
               <p>Профиль не найден</p>

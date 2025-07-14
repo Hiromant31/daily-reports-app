@@ -110,16 +110,16 @@ const bins = useMemo(() => {
   return (
     <div
       ref={containerRef}
-      className="p-4 bg-gray-50 rounded shadow w-full mx-auto relative"
+      className="bg-red-50 rounded shadow w-full mx-auto relative"
       style={{ userSelect: 'none' }}
     >
-      <h4 className="font-semibold mb-2">График активности</h4>
+      <h4 className="font-semibold text-[18px] pl-2 pt-2 mb-2">График активности</h4>
 
       <svg
         width="100%"
         height="100%"
         viewBox={`0 0 ${width} ${height}`}
-        className="bg-white border rounded"
+        className="bg-white rounded-[10px] shadow-md"
       >
         {points.map((point, i) => {
           const barHeight = height - padding - point.y

@@ -156,30 +156,30 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
     <main className="max-w-4xl mx-auto mt-8 p-4 bg-white rounded shadow relative">
       {user ? (
         <div className="flex flex-col md:flex-row gap-6">
-          <div className="hidden md:block w-full md:w-1/3">
+          <div className="hidden relstive md:block md:w-[30%]">
             <UserSidebar user={user} profile={profile} isAdmin={isAdmin} />
           </div>
 
-          <div className="w-full md:w-2/3">
+          <div className="w-full md:w-full">
             {/* Вкладки */}
             <div className="flex mb-4 border-b">
               <button
                 onClick={() => setActiveTab('seller')}
-                className={`px-4 py-2 font-medium ${activeTab === 'seller' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-500'}`}
+                className={`px-4 py-2 text-[24px] font-semibold ${activeTab === 'seller' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-500'}`}
               >
                 Продавец
               </button>
               <button
                 onClick={() => setActiveTab('buyer')}
-                className={`px-4 py-2 font-medium ${activeTab === 'buyer' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-500'}`}
+                className={`px-4 py-2 text-[24px] font-semibold ${activeTab === 'buyer' ? 'text-red-600 border-b-2 border-red-600' : 'text-gray-500'}`}
               >
                 Покупатель
               </button>
             </div>
 
             {/* Выбор диапазона */}
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold">Сводка по отчетам</h3>
+            <div className="flex justify-end items-center mb-4">
+              
               <div className="flex gap-4 mb-4">
                 <input
                   type="date"
@@ -201,13 +201,13 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
             {!loading && summary && (
               <>
                 {/* График */}
-                <div className="my-10">
+                <div className="my-1">
                   <AchievementBadge reports={reports} />
                   <ActivityChart reports={reports} fromDate={fromDate} toDate={toDate} activeTab={activeTab} />
                 </div>
 
                 {/* Данные по вкладке */}
-                <ul className="grid grid-cols-2 gap-2 text-sm">
+                <ul className="grid grid-cols-2 gap-2 mt-5 text-sm">
                   {activeTab === 'seller' && (
                     <>
                       <li>Звонки продавцам: {summary.calls_sellers}</li>
@@ -239,30 +239,30 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
                 {/* Воронка продаж */}
                 <div className="mt-6">
                   <h4 className="font-semibold mb-2">Воронка продаж</h4>
-                  <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-2">
+                  <div className="flex flex-row text-[10px] md:flex-row md:text-[16px] items-center space-y-0 md:space-y-0 md:space-x-2">
                     {activeTab === 'seller' && (
                       <>
-                        <div className="bg-blue-100 text-blue-800 px-3 py-2 rounded flex-1 text-center">Звонки {summary.calls_sellers}</div>
-                        <div className="text-gray-500 hidden md:block">→</div>
-                        <div className="bg-green-100 text-green-800 px-3 py-2 rounded flex-1 text-center">Встречи {summary.meetings_sellers}</div>
-                        <div className="text-gray-500 hidden md:block">→</div>
-                        <div className="bg-purple-100 text-purple-800 px-3 py-2 rounded flex-1 text-center">Договор {summary.contracts_sellers}</div>
-                        <div className="text-gray-500 hidden md:block">→</div>
-                        <div className="bg-yellow-100 text-yellow-800 px-3 py-2 rounded flex-1 text-center">Снижения {summary.price_reductions}</div>
-                        <div className="text-gray-500 hidden md:block">→</div>
-                        <div className="bg-red-100 text-red-800 px-3 py-2 rounded flex-1 text-center">Показы {summary.showings_sellers}</div>
+                        <div className="bg-blue-100 mx-2 text-blue-800 px-3 py-2 rounded flex-1 text-center">Звонки <br></br> {summary.calls_sellers}</div>
+                        <div className="text-gray-500 mx-2 hidden md:block">→</div>
+                        <div className="bg-green-100 mx-2 text-green-800 px-3 py-2 rounded flex-1 text-center">Встречи <br></br> {summary.meetings_sellers}</div>
+                        <div className="text-gray-500 mx-2 hidden md:block">→</div>
+                        <div className="bg-purple-100 mx-2 text-purple-800 px-3 py-2 rounded flex-1 text-center">Договор <br></br> {summary.contracts_sellers}</div>
+                        <div className="text-gray-500 mx-2 hidden md:block">→</div>
+                        <div className="bg-yellow-100 mx-2 text-yellow-800 px-3 py-2 rounded flex-1 text-center">Снижения <br></br> {summary.price_reductions}</div>
+                        <div className="text-gray-500 mx-2 hidden md:block">→</div>
+                        <div className="bg-red-100 mx-2 text-red-800 px-3 py-2 rounded flex-1 text-center">Показы <br></br> {summary.showings_sellers}</div>
                       </>
                     )}
 
                     {activeTab === 'buyer' && (
                       <>
-                        <div className="bg-blue-100 text-blue-800 px-3 py-2 rounded flex-1 text-center">Звонки {summary.calls_buyers}</div>
-                        <div className="text-gray-500 hidden md:block">→</div>
-                        <div className="bg-green-100 text-green-800 px-3 py-2 rounded flex-1 text-center">Встречи {summary.meetings_buyers}</div>
-                        <div className="text-gray-500 hidden md:block">→</div>
-                        <div className="bg-purple-200 text-purple-800 px-3 py-2 rounded flex-1 text-center">Договор {summary.contracts_buyers}</div>
-                        <div className="text-gray-500 hidden md:block">→</div>
-                        <div className="bg-red-100 text-red-800 px-3 py-2 rounded flex-1 text-center">Показы {summary.showings_buyers}</div>
+                        <div className="bg-blue-100 mx-2 text-blue-800 px-3 py-2 rounded flex-1 text-center">Звонки {summary.calls_buyers}</div>
+                        <div className="text-gray-500 mx-2 hidden md:block">→</div>
+                        <div className="bg-green-100 mx-2 text-green-800 px-3 py-2 rounded flex-1 text-center">Встречи {summary.meetings_buyers}</div>
+                        <div className="text-gray-500 mx-2 hidden md:block">→</div>
+                        <div className="bg-purple-200 mx-2 text-purple-800 px-3 py-2 rounded flex-1 text-center">Договор {summary.contracts_buyers}</div>
+                        <div className="text-gray-500 mx-2 hidden md:block">→</div>
+                        <div className="bg-red-100 mx-2 text-red-800 px-3 py-2 rounded flex-1 text-center">Показы {summary.showings_buyers}</div>
                       </>
                     )}
                   </div>
