@@ -106,42 +106,70 @@ export default function ReportFormModal({ user, profile, onClose, isAdmin = fals
     }
   }
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    const cleanData = Object.fromEntries(Object.entries(form).map(([key, value]) => [key, parseInt(value) || 0]))
-    const currentReport = reportsList[selectedReportIndex]
+const handleSubmit = async (e) => {
+  e.preventDefault()
 
-    if (currentReport) {
-      const { error } = await supabase
-        .from('reports')
-        .update({ ...cleanData, status: currentReport.status })
-        .eq('id', currentReport.id)
+  console.group('.handleSubmit — Начало отправки формы')
+  console.log('Форма:', form)
+  console.log('selectedDate:', selectedDate)
+  console.log('isAdmin:', isAdmin)
+  console.log('hasSetReport:', hasSetReport)
+  console.log('reportsList:', reportsList)
+  console.log('selectedReportIndex:', selectedReportIndex)
 
-      if (error) {
-        alert('Ошибка при обновлении отчета')
-      } else {
-        alert('Отчет обновлен')
-        await fetchReports()
-      }
+  const cleanData = Object.fromEntries(
+    Object.entries(form).map(([key, value]) => [key, parseInt(value) || 0])
+  )
+
+  console.log('Очищенные данные:', cleanData)
+
+  const currentReport = reportsList[selectedReportIndex]
+
+  if (currentReport) {
+    console.log('Найден текущий отчет для обновления:', currentReport)
+
+    const { error } = await supabase
+      .from('reports')
+      .update({ ...cleanData, status: currentReport.status })
+      .eq('id', currentReport.id)
+
+    if (error) {
+      console.error('Ошибка при обновлении отчета:', error)
+      alert('Ошибка при обновлении отчета')
     } else {
-      const status = hasSetReport ? 'edit' : 'set'
-      const { error } = await supabase.from('reports').insert({
-        ...cleanData,
-        date: selectedDate,
-        user_id: user.id,
-        status,
-      })
+      console.log('Отчет успешно обновлен')
+      alert('Отчет обновлен')
+      await fetchReports()
+    }
+  } else {
+    console.log('Текущий отчет не найден — будет создан новый')
 
-      if (error) {
-        alert('Ошибка при сохранении отчета')
-      } else {
-        alert(status === 'set' ? 'Отчет сохранен' : 'Отчет изменён')
-        await fetchReports()
-      }
+    const status = hasSetReport ? 'edit' : 'set'
+    console.log('Установлен статус:', status)
+
+    const { error } = await supabase.from('reports').insert({
+      ...cleanData,
+      date: selectedDate,
+      user_id: user.id,
+      status,
+    })
+
+    if (error) {
+      console.error('Ошибка при сохранении отчета:', error)
+      alert('Ошибка при сохранении отчета')
+    } else {
+      console.log('Отчет успешно сохранен как:', status)
+      alert(status === 'set' ? 'Отчет сохранен' : 'Отчет изменён')
+      await fetchReports()
     }
   }
 
+  console.groupEnd()
+}
+
   const handleUpdateStatus = async (status) => {
+    console.log('handleUpdateStatus — Начало', { status, selectedReportIndex, report: reportsList[selectedReportIndex] })
+
     const report = reportsList[selectedReportIndex]
     if (!report) return alert('Отчет не выбран')
 
@@ -166,10 +194,17 @@ export default function ReportFormModal({ user, profile, onClose, isAdmin = fals
     }
   }
 
-  const handleSubmitDropdown = async () => {
+const handleSubmitDropdown = async (action) => {
+  if (action === 'update') {
     await handleSubmit(new Event('submit'))
-    setOpen(false)
+  } else if (action === 'trash') {
+    await handleUpdateStatus('trash')
+  } else if (action === 'ready') {
+    await handleUpdateStatus('ready')
   }
+
+  setOpen(false)
+}
 
   if (loading) return null
 
@@ -284,33 +319,28 @@ const bgColor = isSelected
             className="origin-bottom-right absolute bottom-full right-0 mb-2 w-36 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50"
             onClick={e => e.stopPropagation()}
           >
-            <div className="py-1">
-              <button
-                onClick={() => {
-                  handleUpdateStatus('trash')
-                  setOpen(false)
-                }}
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Отклонить
-              </button>
-              <button
-                onClick={() => {
-                  handleUpdateStatus('ready')
-                  setOpen(false)
-                }}
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Подтвердить
-              </button>
-              <button
-                type="button"
-                onClick={handleSubmitDropdown}
-                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-              >
-                Изменить
-              </button>
-            </div>
+<div className="py-1">
+  <button
+    onClick={() => handleSubmitDropdown('trash')}
+    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+  >
+    Отклонить
+  </button>
+
+  <button
+    onClick={() => handleSubmitDropdown('ready')}
+    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+  >
+    Подтвердить
+  </button>
+
+  <button
+    onClick={() => handleSubmitDropdown('update')}
+    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+  >
+    Изменить
+  </button>
+</div>
           </motion.div>
         )}
       </AnimatePresence>
