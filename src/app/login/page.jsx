@@ -75,7 +75,7 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className='h-full z-1 bg-auto bg-center bg-[url(/front_login.png)] flex flex-col items-center justify-center'>
+    <div className='h-full z-1 bg-auto bg-center pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] bg-[url(/front_login.png)] flex flex-col items-center justify-center'>
        <div className='z-2 backdrop-blur-md bg-white/50 flex flex-col w-[400px] h-[320px] p-[30px] rounded-[25px]'>
         {['login', 'register'].map((tab) => (
           <div className='flex flex-col w-full'>

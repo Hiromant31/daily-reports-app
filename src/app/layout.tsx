@@ -47,9 +47,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="h-full">
+    <html lang="en" className="h-full pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)]">
       <body
-        className={`${geistSans.variable} ${comfortaa.variable} ${daysOne.variable} ${rubik.variable} ${geistMono.variable} antialiased bg-[#faf4e4] h-full w-full`}
+        className={`${geistSans.variable} ${comfortaa.variable} ${daysOne.variable} ${rubik.variable} ${geistMono.variable} antialiased pt-[env(safe-area-inset-top)] pb-[env(safe-area-inset-bottom)] bg-[#faf4e4] h-full w-full`}
       >
         {/* Оборачиваем приложение в ModalProvider */}
         <ModalProvider>
