@@ -6,7 +6,6 @@ import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { data } from 'autoprefixer'
 import { Rubik } from 'next/font/google'
-import styles from './RegisterPage.module.css'
 import { DiffieHellman } from 'crypto'
 
   const rubik = Rubik({
