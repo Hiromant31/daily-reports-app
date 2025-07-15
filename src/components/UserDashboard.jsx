@@ -153,7 +153,7 @@ export default function UserDashboard({ user, isAdmin = false, profile: initialP
   }
 
   return (
-    <main className="max-w-4xl mx-auto mt-8 p-4 bg-white rounded shadow relative">
+    <main className="max-w-4xl mx-auto mt-0 p-4 bg-white rounded shadow relative">
       {user ? (
         <div className="flex flex-col md:flex-row gap-6">
           <div className="hidden relstive md:block md:w-[30%]">

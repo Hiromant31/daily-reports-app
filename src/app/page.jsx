@@ -50,8 +50,10 @@ export default function DashboardPage() {
   }
 
   return (
-    <div>
-<header className="bg-white shadow-md px-4 py-3 flex items-center justify-between w-full">
+    <div className='bg-white pt-2 h-full justify-center'>
+<header className="w-full">
+
+    <div className='max-w-4xl px-4 m-auto flex items-center justify-between'>
   {/* Левая часть */}
   <div className="flex items-center gap-2 w-full">
     {/* На мобильных — модуль с кнопкой меню (внутри — имя и кнопка ☰) */}
@@ -68,6 +70,7 @@ export default function DashboardPage() {
         Выйти
       </button>
     </div>
+  </div>
   </div>
 </header>
 
