@@ -9,7 +9,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        'rubik': ['var(--font-rubik)', 'sans-serif'],
+        sans: ['var(--font-days-one)', 'sans-serif'],
+        sans: ['var(--font-comfortaa)', 'sans-serif'],
+        "rubik": ['var(--font-rubik)'],
       },
       colors: {
         accent: {

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { Rubik } from 'next/font/google'
+import { Rubik } from 'next/font/google';
+import { Comfortaa } from 'next/font/google';
+import { Days_One} from 'next/font/google';
 import { ModalProvider } from '@/components/ModalContext'; // Импортируем провайдер для модалки
 import "./globals.css";
 import "./register/RegisterPage.module.css";
@@ -11,10 +13,22 @@ const geistSans = Geist({
   subsets: ["latin"],
 });
 
+const comfortaa = Comfortaa({
+  subsets: ['latin'],
+  weight: ['300'],
+  variable: '--font-comfortaa',
+})
+
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
 });
+
+const daysOne = Days_One({
+  subsets: ['latin'],
+  weight: ['400'],
+  variable: '--font-days-one',
+})
 
 const rubik = Rubik({
   subsets: ['latin', 'cyrillic'],
@@ -35,7 +49,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${rubik.variable} ${geistMono.variable} antialiased`}
+        className={`${geistSans.variable} ${comfortaa.variable} ${daysOne.variable} ${rubik.variable} ${geistMono.variable} antialiased`}
       >
         {/* Оборачиваем приложение в ModalProvider */}
         <ModalProvider>
