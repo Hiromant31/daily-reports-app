@@ -69,6 +69,12 @@ export default function DashboardPage() {
       >
         Выйти
       </button>
+      <button
+            onClick={() => router.push('/owners')}
+            className="text-left font-comfortee py-2 px-5 mx-5 rounded bg-red-500 hover:bg-red-900 transition"
+          >
+            Мои объекты
+          </button>
     </div>
   </div>
   </div>

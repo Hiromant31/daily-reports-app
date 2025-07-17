@@ -157,6 +157,8 @@ export default function UserSidebar({ user, profile, isAdmin }) {
                 <li className='mt-5'><strong>Телефон:</strong> {profile.phone || 'Не указан'}</li>
                 <li className='mt-5'><strong>Роль:</strong> <br></br> <div className='text-[20px] text-red-700 font-semibold'> {getRoleLabel(profile.role)}</div></li>
               </ul>
+              
+              
             ) : (
               <p>Профиль не найден</p>
             )}
