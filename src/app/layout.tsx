@@ -15,7 +15,7 @@ const geistSans = Geist({
 
 const comfortaa = Comfortaa({
   subsets: ['latin'],
-  weight: ['300'],
+  weight: ['300','400','500','600','700' ],
   variable: '--font-comfortaa',
 })
 
@@ -62,6 +62,7 @@ export default function RootLayout({
           {children}
         </ModalProvider>
       </body>
+
     </html>
   );
 }

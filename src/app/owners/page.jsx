@@ -37,6 +37,21 @@ export default function OwnersPage() {
           setProperties(data)
           setSelectedProperty(data?.[0] || null)
         }
+        const propertiesWithOwners = await Promise.all(
+        propertiesData.map(async (property) => {
+          const { data: ownersData, error: ownersError } = await supabase
+            .from('property_owners')
+            .select('owners(*)')
+            .eq('property_id', property.id)
+
+          return {
+            ...property,
+            owners: ownersError ? [] : ownersData.map(po => po.owners),
+          }
+        })
+      )
+      setProperties(propertiesWithOwners)
+      setSelectedProperty(propertiesWithOwners?.[0] || null)
       }
     }
 
@@ -64,16 +79,16 @@ export default function OwnersPage() {
   }
 
   return (
-    <div className="flex relative h-full bg-[#FAF4E4] w-full m-auto p-[10px] ">
+    <div className="flex relative h-full bg-[#FAF4E4] w-full justify-center m-auto p-[10px] ">
         <div className='flex relative w-9/10 h-full m-auto'>
       {/* Левая колонка */}
-      <div className="w-1/2 max-w-150 relative border-r h-full flex">
-      <div className='bg-[#131313] p-[24px] w-1/2 mb-[50px] rounded-[25px] '>
+      <div className="w-4/10 max-w-[560px] relative h-full flex">
+      <div className='bg-[#131313] p-[24px] text-center max-w-[240px] w-2/5 mb-[50px] rounded-[25px] '>
       <div className=""> 
-        <span className='font-daysone m-auto text-white text-[52px]'>АЯКС</span>
+        <span className='font-daysone m-auto text-white text-[32px]'>АЯКС</span>
       </div>
         {/* Меню сверху */}
-        <nav className="flex text-[24px] text-white font-comfortaa border-b m-auto mt-[20px] flex-col gap-3">
+        <nav className="flex text-[18px] text-white font-comfortaa font-bold border-b m-auto mt-[20px] flex-col gap-3">
           <button
             onClick={() => router.push('/')}
             className="text-left py-[12px] rounded hover:text-[#B8BFF5] transition"
@@ -101,7 +116,7 @@ export default function OwnersPage() {
                   <div className="p-2 ml-0 border-t">
           <button
             onClick={handleLogout}
-            className="w-full px-4 py-2 text-[24px] font-semibold text-white hover:[#F5B8DA] transition"
+            className="w-full px-4 py-2 text-[18px] font-semibold text-white hover:[#F5B8DA] transition"
           >
             Выйти
           </button>
@@ -110,7 +125,7 @@ export default function OwnersPage() {
         </div>
 
         {/* Список объектов - прокручиваемый */}
-        <div className="flex-grow pl-5 w-1/2 max-w-250 overflow-y-auto ">
+        <div className="flex-grow pl-5 overflow-y-auto ">
                 <button
             onClick={() => setShowModal(true)}
             className="font-daysone px-3 py-1 mx-2 my-2 rounded bg-[#FAE2E2] hover:bg-[#E2EAFA]"
@@ -121,11 +136,11 @@ export default function OwnersPage() {
             <div
               key={property.id}
               onClick={() => setSelectedProperty(property)}
-              className={`cursor-pointer p-3 rounded mb-2 ${
-                selectedProperty?.id === property.id ? '' : 'hover:bg-gray-200'
+              className={`cursor-pointer rounded my-2 ${
+                selectedProperty?.id === property.id ? 'ml-10' : 'hover:ml-10'
               }`}
             >
-              <ObjectCard property={property} selected={selectedProperty?.id === property.id} />
+              <ObjectCard property={property} selected={selectedProperty?.id === property.id} owners={property.owners || []} />
             </div>
           ))}
         </div>
