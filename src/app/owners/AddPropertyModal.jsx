@@ -13,7 +13,9 @@ export default function AddPropertyModal({ user, onClose, onCreated }) {
     next_call_date: '',
     owner_name: '',
     owner_phone: '',
-    call_comment: ''
+    call_comment: '',
+    object_number: '',
+    source_link: '',
   })
 
   const [loading, setLoading] = useState(false)
@@ -38,6 +40,8 @@ export default function AddPropertyModal({ user, onClose, onCreated }) {
           property_type: form.property_type,
           status: form.status,
           note: form.note,
+          obj_num: object_number,
+          link: source_link,
           note_date: new Date().toISOString().split('T')[0],
           next_call_date: new Date().toISOString().split('T')[0]
         }])
@@ -151,6 +155,17 @@ export default function AddPropertyModal({ user, onClose, onCreated }) {
           <div>
             <label>Телефон</label>
             <input name="owner_phone" onChange={handleChange} value={form.owner_phone} className="w-full border p-2 rounded" />
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <label>НО</label>
+            <input name="object_number" onChange={handleChange} value={form.object_number} className="w-full border p-2 rounded" />
+          </div>
+          <div>
+            <label>Ссылка</label>
+            <input name="source_link" onChange={handleChange} value={form.source_link} className="w-full border p-2 rounded" />
           </div>
         </div>
 

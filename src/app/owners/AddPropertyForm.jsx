@@ -53,6 +53,7 @@ export default function AddPropertyForm({ user, onAdd }) {
         property_type,
         address,
         description,
+        object_number,
         status,
         next_call_date: next_call_date || null,
         user_id: user.id,
@@ -176,6 +177,18 @@ export default function AddPropertyForm({ user, onAdd }) {
             placeholder="Необязательно"
           />
         </div>
+
+        <div>
+          <label className="block text-sm font-medium">НО</label>
+          <input
+            type="text"
+            name="owner_full_name"
+            value={form.object_number}
+            onChange={handleChange}
+            className="w-full border rounded p-2"
+            placeholder="Необязательно"
+          />
+        </div>        
 
         <div>
           <label className="block text-sm font-medium">Телефон собственника</label>

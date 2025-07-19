@@ -16,7 +16,7 @@ window._ = _;
 window.$ = $;
 window.jQuery = $;
 window.DataTable = $.fn.dataTable;
-(window as any).noUiSlider = noUiSlider.default;
+window.noUiSlider = noUiSlider;
 window.VanillaCalendarPro = VanillaCalendarPro;
 
 // Preline UI
