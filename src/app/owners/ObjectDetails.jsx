@@ -207,7 +207,7 @@ export default function ObjectDetails({ property, onUpdated }) {
   }
 
   return (
-    <div className="bg-[#FAE2E2] shadow p-6 rounded-lg max-w-full mx-5">
+    <div className="bg-[#FAE2E2] shadow p-6 rounded-lg min-w-[600px] max-w-[full] mx-5">
       <div className='flex justify-between'>
             <h2 className="text-[32px] font-daysone mb-2">Собственник</h2>
             <div className='flex flex-col'>

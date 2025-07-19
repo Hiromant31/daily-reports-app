@@ -81,7 +81,8 @@ export default function OwnersPage() {
   }
 
   return (
-    <div className="flex relative h-full bg-[#FAF4E4] w-full justify-center m-auto p-[10px]">
+    <div className="flex relative h-full bg-[#FAF4E4]  w-full justify-center m-auto p-[10px]">
+        <div className=''>
       {/* Кнопка меню (моб) */}
       {isMobile && (
         <button
@@ -92,7 +93,7 @@ export default function OwnersPage() {
         </button>
       )}
 
-      <div className="flex relative w-full md:w-9/10 h-full m-auto">
+      <div className="flex relative w-full md:max-w-[1200px] h-full m-auto">
         {/* Сайдбар (только десктоп) */}
         <div className="hidden md:flex bg-[#131313] p-[24px] text-center max-w-[240px] w-2/5 mb-[50px] rounded-[25px] flex-col">
           <span className='font-daysone text-white text-[32px]'>АЯКС</span>
@@ -106,14 +107,14 @@ export default function OwnersPage() {
         </div>
 
         {/* Список объектов */}
-        <div className="flex-grow min-w-[20px] pl-5 overflow-y-auto">
+        <div className="flex-row min-w-[20px] pl-5 overflow-y-auto">
           <button
             onClick={() => setShowModal(true)}
             className="font-daysone px-3 py-1 mx-2 my-2 rounded bg-[#FAE2E2] hover:bg-[#E2EAFA]"
           >
             + Добавить
           </button>
-
+          <div className='flex flex-col min-w-[300px]'>
           {properties.map((property) => (
             <div
               key={property.id}
@@ -132,11 +133,12 @@ export default function OwnersPage() {
               />
             </div>
           ))}
+          </div>
         </div>
 
         {/* Правая колонка (детали объекта) */}
         {!isMobile && (
-          <div className="flex-grow w-6/10 overflow-y-auto">
+          <div className="flex-grow max-w-[600px] overflow-y-auto">
             {selectedProperty ? (
               <ObjectDetails
                 property={selectedProperty}
@@ -216,6 +218,7 @@ export default function OwnersPage() {
         />
         </div>
       )}
+      </div>
     </div>
   )
 }
