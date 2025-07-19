@@ -41,7 +41,7 @@ export default function ObjectCard({ property, selected }) {
 
   return (
     <div
-      className={`p-3 mb-3 w-[270px] h-[150px] rounded-[25px] cursor-pointer shadow-sm ${
+      className={`p-3 mb-3 w-[240px] h-[150px] rounded-[25px] cursor-pointer shadow-sm ${
         selected ? 'bg-[#FAE2E2] border-[#FAE2E2]' : 'bg-[#E2EAFA] hover:bg-[#E2EAFA]'
       }`}
     >

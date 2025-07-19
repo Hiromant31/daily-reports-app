@@ -84,6 +84,12 @@ export default function UserSidebar({ user, profile, isAdmin }) {
                 <li><strong>Email:</strong> {profile?.email}</li>
                 <li><strong>Телефон:</strong> {profile?.phone || 'Не указан'}</li>
               </ul>
+              <button
+            onClick={() => router.push('/owners')}
+            className="mt-4 w-full text-left px-4 py-2 text-sm rounded bg-[#e53740] text-white hover:bg-[#c72f35]"
+          >
+            Мои объекты
+          </button>
 
               {/* Добавляем проверку isAdmin для мобильной версии */}
               {isAdmin && (

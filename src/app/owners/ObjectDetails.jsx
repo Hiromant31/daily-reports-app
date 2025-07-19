@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import EditableLink from './EditableLink'
+import CustomDatePicker from './CustomDatePicker'
 
 export default function ObjectDetails({ property, onUpdated }) {
   // Состояния
@@ -207,22 +208,27 @@ export default function ObjectDetails({ property, onUpdated }) {
 
   return (
     <div className="bg-[#FAE2E2] shadow p-6 rounded-lg max-w-full mx-5">
-      <div className='grid grid-cols-2'>
+      <div className='flex justify-between'>
             <h2 className="text-[32px] font-daysone mb-2">Собственник</h2>
             <div className='flex flex-col'>
                   <label className="block text-sm text-right mr-1 font-daysone text-[12px] font-medium">
         Набрать
       </label>
-      <div className="flex justify-end text-[20px] text-red-500">
-        <input
-          type="date"
-          value={date}
-          onChange={handleDateChange}
-          className="font-daysone rext-red-300 rounded-md"
-        />
-        {savingDate && <span className="text-sm text-gray-500">Сохранение...</span>}
-        {dateMessage && <span className="text-sm text-green-600">{dateMessage}</span>}
-        </div>
+      
+        <CustomDatePicker
+  selectedDate={date}
+  onChange={async (newDate) => {
+    setDate(newDate)
+    const { error } = await supabase
+      .from('properties')
+      .update({ next_call_date: newDate })
+      .eq('id', property.id)
+
+    if (!error && onUpdated) {
+      onUpdated()
+    }
+  }}
+/>
       </div>
       </div>
       {loadingOwners ? (
