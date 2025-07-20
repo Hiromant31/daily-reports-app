@@ -80,9 +80,13 @@ export default function OwnersPage() {
     router.push('/login')
   }
 
-  return (
-    <div className="flex relative h-full bg-[#FAF4E4]  w-full justify-center m-auto p-[10px]">
-        <div className=''>
+return (
+  <div className="flex relative h-full bg-[#FAF4E4] w-full justify-center m-auto p-[10px]">
+
+        
+
+    <div className="md:grid md:grid-cols-12 flex relative w-full md:max-w-[1200px] h-full m-auto">
+        <div></div>
       {/* Кнопка меню (моб) */}
       {isMobile && (
         <button
@@ -93,28 +97,28 @@ export default function OwnersPage() {
         </button>
       )}
 
-      <div className="flex relative w-full md:max-w-[1200px] h-full m-auto">
-        {/* Сайдбар (только десктоп) */}
-        <div className="hidden md:flex bg-[#131313] p-[24px] text-center max-w-[240px] w-2/5 mb-[50px] rounded-[25px] flex-col">
-          <span className='font-daysone text-white text-[32px]'>АЯКС</span>
-          <nav className="flex text-[18px] text-white font-comfortaa font-bold border-b mt-[20px] flex-col gap-3">
-            <button onClick={() => router.push('/')}>Главная</button>
-            <button onClick={() => router.push('/owners')} className="text-[#F5B8DA]">Мои объекты</button>
-            <button onClick={() => router.push('/reports')}>Отчёты</button>
-            <button onClick={() => router.push('/profile')}>Профиль</button>
-            <button onClick={handleLogout} className="mt-4 text-[#F5B8DA]">Выйти</button>
-          </nav>
-        </div>
+      {/* Сайдбар (десктоп) */}
+      <div className="hidden col-span-2 md:flex bg-[#131313] p-[24px] mb-[50px] rounded-[25px] flex-col">
+        <span className="font-daysone text-white text-center text-[32px]">АЯКС</span>
+        <nav className="flex text-[18px] text-white justify-start font-comfortaa font-bold mt-[20px] flex-col gap-3">
+          <button onClick={() => router.push('/')} className="text-start">Главная</button>
+          <button onClick={() => router.push('/owners')} className="text-start text-[#F5B8DA]">Мои объекты</button>
+          <button onClick={() => router.push('/reports')} className="text-start">Отчёты</button>
+          <button onClick={() => router.push('/profile')} className="text-start">Профиль</button>
+          <button onClick={handleLogout} className="mt-4 text-start text-[#F5B8DA]">Выйти</button>
+        </nav>
+      </div>
 
-        {/* Список объектов */}
-        <div className="flex-row min-w-[20px] pl-5 overflow-y-auto">
-          <button
-            onClick={() => setShowModal(true)}
-            className="font-daysone px-3 py-1 mx-2 my-2 rounded bg-[#FAE2E2] hover:bg-[#E2EAFA]"
-          >
-            + Добавить
-          </button>
-          <div className='flex flex-col min-w-[300px]'>
+      {/* Список объектов */}
+      <div className="flex-row col-span-3 w-full pl-5 overflow-y-auto">
+        <button
+          onClick={() => setShowModal(true)}
+          className="font-daysone px-3 py-1 mx-2 my-2 rounded bg-[#FAE2E2] hover:bg-[#E2EAFA]"
+        >
+          + Добавить
+        </button>
+
+        <div className="flex flex-col">
           {properties.map((property) => (
             <div
               key={property.id}
@@ -123,7 +127,7 @@ export default function OwnersPage() {
                 if (isMobile) setDetailsOpen(true)
               }}
               className={`cursor-pointer rounded my-2 ${
-                selectedProperty?.id === property.id ? 'ml-10' : 'hover:ml-10'
+                selectedProperty?.id === property.id ? '' : 'hover:ml-0'
               }`}
             >
               <ObjectCard
@@ -133,81 +137,84 @@ export default function OwnersPage() {
               />
             </div>
           ))}
-          </div>
         </div>
-
-        {/* Правая колонка (детали объекта) */}
-        {!isMobile && (
-          <div className="flex-grow max-w-[600px] overflow-y-auto">
-            {selectedProperty ? (
-              <ObjectDetails
-                property={selectedProperty}
-                onUpdated={reloadProperties}
-              />
-            ) : (
-              <p className="text-gray-500">Выберите объект слева</p>
-            )}
-          </div>
-        )}
       </div>
 
-      {/* Модальное окно деталей (мобильный) */}
-      <AnimatePresence>
-        {isMobile && detailsOpen && selectedProperty && (
-          <motion.div
-            initial={{ y: '100%' }}
-            animate={{ y: 0 }}
-            exit={{ y: '100%' }}
-            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-            className="fixed bottom-0 left-0 right-0 z-50 rounded-t-2xl p-4 backdrop-blur-md max-h-[100vh] overflow-y-auto"
-          >
-            <button
-              className="text-gray-500 float-right"
-              onClick={() => setDetailsOpen(false)}
-            >
-              ✕ Закрыть
-            </button>
+      <div className='col-span-5'>
+
+
+      {/* Детали объекта (десктоп) */}
+      {!isMobile && (
+        <div className="flex-grow w-full shadow-[5px_5px_0px_rgba(0,0,0,0.25)] overflow-y-auto">
+          {selectedProperty ? (
             <ObjectDetails
               property={selectedProperty}
-              onUpdated={() => {
-                reloadProperties()
-                setDetailsOpen(false)
-              }}
+              onUpdated={reloadProperties}
             />
-          </motion.div>
-        )}
-      </AnimatePresence>
+          ) : (
+            <p className="text-gray-500">Выберите объект слева</p>
+          )}
+        </div>
+      )}
+      </div>
+    </div>
 
-      {/* Сайдбар меню (мобильный) */}
-      <AnimatePresence>
-        {isMobile && showMenuMobile && (
-          <motion.div
-            initial={{ x: '100%' }}
-            animate={{ x: 0 }}
-            exit={{ x: '100%' }}
-            transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-            className="fixed top-0 right-0 w-3/4 h-full bg-[#131313] text-white p-6 z-50 shadow-xl"
+
+    {/* Модальное окно деталей (моб) */}
+    <AnimatePresence>
+      {isMobile && detailsOpen && selectedProperty && (
+        <motion.div
+          initial={{ y: '100%' }}
+          animate={{ y: 0 }}
+          exit={{ y: '100%' }}
+          transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+          className="fixed top-10 left-0 right-0 z-50 rounded-t-2xl m-4 max-h-[90vh] overflow-y-auto"
+        >
+          <button
+            className="text-gray-500 float-right"
+            onClick={() => setDetailsOpen(false)}
           >
-            <button
-              className="text-right mb-4"
-              onClick={() => setShowMenuMobile(false)}
-            >
-              ✕
-            </button>
-            <nav className="flex flex-col gap-3 text-[18px] font-comfortaa font-bold">
-              <button onClick={() => router.push('/')}>Главная</button>
-              <button onClick={() => router.push('/owners')}>Мои объекты</button>
-              <button onClick={() => router.push('/reports')}>Отчёты</button>
-              <button onClick={() => router.push('/profile')}>Профиль</button>
-              <button onClick={handleLogout} className="mt-4 text-[#F5B8DA]">Выйти</button>
-            </nav>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            ✕ Закрыть
+          </button>
+          <ObjectDetails
+            property={selectedProperty}
+            onUpdated={() => {
+              reloadProperties()
+              setDetailsOpen(false)
+            }}
+          />
+        </motion.div>
+      )}
+    </AnimatePresence>
 
-      {/* Модалка добавления объекта */}
-      {showModal && (
-        <div className='overflow-y-auto'>
+    {/* Меню (моб) */}
+    <AnimatePresence>
+      {isMobile && showMenuMobile && (
+        <motion.div
+          initial={{ x: '100%' }}
+          animate={{ x: 0 }}
+          exit={{ x: '100%' }}
+          transition={{ type: 'spring', damping: 40, stiffness: 500 }}
+          className="fixed top-0 backdrop-blur-md right-0 w-[200px] h-full bg-[#131313] text-white p-6 z-50 shadow-xl"
+        >
+          <button className="text-right mb-4" onClick={() => setShowMenuMobile(false)}>
+            ✕
+          </button>
+          <nav className="flex flex-col gap-3 text-[18px] font-comfortaa font-bold">
+            <span className="font-daysone text-white text-center text-[32px]">АЯКС</span>
+            <button onClick={() => router.push('/')}>Главная</button>
+            <button onClick={() => router.push('/owners')}>Мои объекты</button>
+            <button onClick={() => router.push('/reports')}>Отчёты</button>
+            <button onClick={() => router.push('/profile')}>Профиль</button>
+            <button onClick={handleLogout} className="mt-4 text-[#F5B8DA]">Выйти</button>
+          </nav>
+        </motion.div>
+      )}
+    </AnimatePresence>
+
+    {/* Модалка добавления */}
+    {showModal && (
+      <div className="overflow-y-auto">
         <AddPropertyModal
           user={user}
           onClose={() => setShowModal(false)}
@@ -216,9 +223,8 @@ export default function OwnersPage() {
             setShowModal(false)
           }}
         />
-        </div>
-      )}
       </div>
-    </div>
-  )
+    )}
+  </div>
+)
 }

@@ -9,6 +9,8 @@ export default function ObjectDetails({ property, onUpdated }) {
   const [link, setLink] = useState(property.source_link || '')
   const [savingDate, setSavingDate] = useState(false)
   const [dateMessage, setDateMessage] = useState('')
+  const maxLength = 25
+
 
   const [notification, setNotification] = useState('')
 
@@ -96,6 +98,12 @@ export default function ObjectDetails({ property, onUpdated }) {
 
     fetchCalls()
   }, [property])
+
+  const displayText = property.note ? (
+    property.note.length > maxLength ? property.note.slice(0, maxLength) + '...' : property.note
+  ) : (
+    <span className="text-gray-400">Ссылка не указана</span>
+  )
 
   const handleLinkUpdated = async () => {
   // Перезагружаем текущий объект из базы
@@ -207,11 +215,11 @@ export default function ObjectDetails({ property, onUpdated }) {
   }
 
   return (
-    <div className="bg-[#FAE2E2] shadow p-6 rounded-lg min-w-[600px] max-w-[full] mx-5">
-      <div className='flex justify-between'>
-            <h2 className="text-[32px] font-daysone mb-2">Собственник</h2>
-            <div className='flex flex-col'>
-                  <label className="block text-sm text-right mr-1 font-daysone text-[12px] font-medium">
+    <div className="bg-[#FAE2E2] shadow p-6 rounded-lg mx-5">
+      <div className='flex h-[40pxpx] content-end justify-between'>
+            <h2 className="text-[20px] font-daysone content-end ">Собственник</h2>
+            <div className='flex lex-col'>
+                  <label className="block text-sm text-right mr-1 font-daysone text-[10px] font-medium">
         Набрать
       </label>
       
@@ -237,120 +245,37 @@ export default function ObjectDetails({ property, onUpdated }) {
         <p className="text-gray-500">Собственники не найдены</p>
       ) : (
         owners.map(owner => (
-          <div key={owner.id} className=" font-daysone mb-[20px] text-[16px] ">
-            <div className='grid grid-cols-4 my-[10px] gap-2 rounded-[10px] border border-[#131313]'>
-              <div className='pl-[10px] text-white rounded-[8px] bg-[#131313] w-full'>Имя</div>
-              <div className='col-span-2 pl-20px'>{owner.full_name}</div>
+          <div key={owner.id} className=" font-daysone mb-[20px] text-[12px] ">
+            <div className='grid grid-cols-6 my-[10px] gap-2 rounded-[8px] border border-[#131313]'>
+              <div className='pl-[10px] col-span-2 text-white rounded-[6px] bg-[#131313] w-full'>Имя</div>
+              <div className='col-span-4 pl-20px'>{owner.full_name}</div>
             </div>
-            <div className='grid grid-cols-4 gap-2 rounded-[10px] border border-[#131313]'>
-              <div className='pl-[10px] text-white rounded-[8px] bg-[#131313] w-full'>Телефон</div>
-              <div className='col-span-2 pl-20px'>{owner.phone}</div>
+            <div className='grid grid-cols-6 gap-2 rounded-[8px] border border-[#131313]'>
+              <div className='pl-[10px] col-span-2 text-white rounded-[6px] bg-[#131313] w-full'>Телефон</div>
+              <div className='col-span-4 pl-20px'>{owner.phone}</div>
               </div>
           </div>
         ))
       )}
-      <h2 className="text-[32px] font-daysone mb-2">Объект</h2>
+      <h2 className="text-[20px] font-daysone mb-2">Объект</h2>
 
       {/* Дата следующего прозвона */}
 
 
       <h2 className="text-2xl font-bold mb-2"></h2>
-      <div className=" font-daysone mb-[20px] text-[16px] ">
-            <div className='grid grid-cols-4 my-[10px] gap-2 rounded-[10px] border border-[#131313]'>
-              <div className='pl-[10px] text-white rounded-[8px] bg-[#131313] w-full'>{property.property_type}</div>
-              <div className='col-span-2 pl-20px'>{property.description}</div>
+      <div className=" font-daysone mb-[20px] text-[12px] ">
+            <div className='grid grid-cols-8 my-[10px] gap-2 rounded-[8px] border border-[#131313]'>
+              <div className='pl-[10px] col-span-3 text-white rounded-[6px] bg-[#131313] w-full'>{property.property_type}</div>
+              <div className='col-span-4 pl-20px'>{property.description}</div>
             </div>
-            <div className='grid grid-cols-4 gap-2 rounded-[10px] border border-[#131313]'>
-              <div className='pl-[10px] text-white rounded-[8px] bg-[#131313] w-full'>Адрес</div>
-              <div className='col-span-2 pl-20px'>{property.address}</div>
+            <div className='grid grid-cols-8 gap-2 rounded-[8px] border border-[#131313]'>
+              <div className='pl-[10px] col-span-3 text-white rounded-[6px] bg-[#131313] w-full'>Адрес</div>
+              <div className='col-span-4 pl-20px'>{property.address}</div>
               </div>
-          </div>
-          <EditableLink
-  initialLink={property.source_link || ''}
-  propertyId={property.id}
-  onUpdated={handleLinkUpdated}
-/>
-
-{/* Редактируемый статус с цветом фона */}
-<div className="mt-4">
-  <label className="block font-medium text-gray-700 mb-1">Статус</label>
-  <select
-    value={property.status || ''}
-    onChange={async (e) => {
-      const newStatus = e.target.value
-      const { error } = await supabase
-        .from('properties')
-        .update({ status: newStatus })
-        .eq('id', property.id)
-
-      if (!error && onUpdated) {
-        const { data } = await supabase
-          .from('properties')
-          .select('*')
-          .eq('id', property.id)
-          .single()
-
-        if (data) {
-          onUpdated(data)
-        }
-      } else {
-        alert('Ошибка при обновлении статуса')
-      }
-    }}
-    className={`block w-[150px] h-10 font-daysone text-center mb-5 py-2 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2
-      ${
-        property.status === 'договор'
-          ? 'bg-green-500 text-white'
-          : property.status === 'подписание' || property.status === 'на встречу'
-          ? 'bg-purple-500 text-white'
-          : property.status === 'подождем' || property.status === 'не хочу'
-          ? 'bg-yellow-400 text-gray-800'
-          : ['слился', 'отказ', 'снят'].includes(property.status)
-          ? 'bg-red-500 text-white'
-          : property.status === 'продан'
-          ? 'bg-orange-600 text-white'
-          : 'bg-gray-100 text-gray-900'
-      }
-    `}
-  >
-    <option value="договор">договор</option>
-    <option value="подписание">подписание</option>
-    <option value="на встречу">на встречу</option>
-    <option value="подождем">подождем</option>
-    <option value="не хочу">не хочу</option>
-    <option value="слился">слился</option>
-    <option value="отказ">отказ</option>
-    <option value="продан">продан</option>
-    <option value="снят">снят</option>
-  </select>
-</div>
-<div className="hs-dropdown relative inline-flex">
-  <button id="hs-dropdown-default" type="button" className="hs-dropdown-toggle py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-gray-200 bg-white text-gray-800 shadow-2xs hover:bg-gray-50 focus:outline-hidden focus:bg-gray-50 disabled:opacity-50 disabled:pointer-events-none dark:bg-neutral-800 dark:border-neutral-700 dark:text-white dark:hover:bg-neutral-700 dark:focus:bg-neutral-700" aria-haspopup="menu" aria-expanded="false" aria-label="Dropdown">
-    Actions
-    <svg className="hs-dropdown-open:rotate-180 size-4" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
-  </button>
-
-  <div className="hs-dropdown-menu transition-[opacity,margin] duration hs-dropdown-open:opacity-100 opacity-0 hidden min-w-60 bg-white shadow-md rounded-lg mt-2 dark:bg-neutral-800 dark:border dark:border-neutral-700 dark:divide-neutral-700 after:h-4 after:absolute after:-bottom-4 after:start-0 after:w-full before:h-4 before:absolute before:-top-4 before:start-0 before:w-full" role="menu" aria-orientation="vertical" aria-labelledby="hs-dropdown-default">
-    <div className="p-1 space-y-0.5">
-      <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700" href="#">
-        Newsletter
-      </a>
-      <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700" href="#">
-        Purchases
-      </a>
-      <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700" href="#">
-        Downloads
-      </a>
-      <a className="flex items-center gap-x-3.5 py-2 px-3 rounded-lg text-sm text-gray-800 hover:bg-gray-100 focus:outline-hidden focus:bg-gray-100 dark:text-neutral-400 dark:hover:bg-neutral-700 dark:hover:text-neutral-300 dark:focus:bg-neutral-700" href="#">
-        Team Account
-      </a>
-    </div>
-  </div>
-</div>
-          <div className="flex items-center mt-4">
-  <p className="mr-2">
-    <strong>НО:</strong> {property.object_number || <span className="text-gray-400">Не указан</span>}
-  </p>
+            <div className='grid grid-cols-8 gap-2 my-[10px] '>
+              <div className='pl-[10px] col-span-4 rounded-[8px] border border-[#131313] w-full'>
+                          <div className="flex items-center mt-1">
+  
   {/* Всплывающее уведомление */}
 {notification && (
   <div className="fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-300">
@@ -377,20 +302,85 @@ export default function ObjectDetails({ property, onUpdated }) {
         setTimeout(() => setNotification(''), 2000)
       })
   }}
-  className="ml-2 text-gray-500 hover:text-gray-700 focus:outline-none"
+  className=" text-gray-500 hover:text-gray-700 focus:outline-none"
   title="Скопировать НО"
 >
-  📋
+<p className="">
+    <strong></strong> {property.object_number || <span className="text-gray-400">Не указан</span>}
+  </p>
 </button>
 </div>
-      <p><strong>Статус:</strong> {property.status}</p>
-      <p><strong>Комментарий:</strong> {property.note}</p>
+              </div>
+              <div className='col-span-4 pl-20px border rounded-[8px] border-[#131313]'>
+                <div className="">
+  
+  <select
+    value={property.status || ''}
+    onChange={async (e) => {
+      const newStatus = e.target.value
+      const { error } = await supabase
+        .from('properties')
+        .update({ status: newStatus })
+        .eq('id', property.id)
+
+      if (!error && onUpdated) {
+        const { data } = await supabase
+          .from('properties')
+          .select('*')
+          .eq('id', property.id)
+          .single()
+
+        if (data) {
+          onUpdated(data)
+        }
+      } else {
+        alert('Ошибка при обновлении статуса')
+      }
+    }}
+    className={`block w-full font-daysone text-center py-1 rounded-[8px] focus:outline-none focus:ring-0 focus:ring-offset-0
+      ${
+        property.status === 'договор'
+          ? 'bg-green-500 text-white'
+          : property.status === 'подписание' || property.status === 'на встречу'
+          ? 'bg-purple-500 text-white'
+          : property.status === 'подождем' || property.status === 'не хочу'
+          ? 'bg-yellow-400 text-gray-800'
+          : ['слился', 'отказ', 'снят'].includes(property.status)
+          ? 'bg-red-500 text-white'
+          : property.status === 'продан'
+          ? 'bg-orange-600 text-white'
+          : 'bg-gray-100 text-gray-900'
+      }
+    `}
+  >
+    <option value="договор">договор</option>
+    <option value="подписание">подписание</option>
+    <option value="на встречу">на встречу</option>
+    <option value="подождем">подождем</option>
+    <option value="не хочу">не хочу</option>
+    <option value="слился">слился</option>
+    <option value="отказ">отказ</option>
+    <option value="продан">продан</option>
+    <option value="снят">снят</option>
+  </select>
+</div>
+</div>
+            </div>
+          </div>
+
+          <EditableLink
+  initialLink={property.source_link || ''}
+  propertyId={property.id}
+  onUpdated={handleLinkUpdated}
+/>
+
+{/* Редактируемый статус с цветом фона */}
+
+
+      <p className='mt-[10px]'><strong>Комментарий</strong> {displayText}</p>
 
       <hr className="my-6" />
 
-
-
-      <hr className="my-6" />
 
       <h2 className="text-2xl font-bold mb-2">Последний прозвон</h2>
       {loadingCalls ? (

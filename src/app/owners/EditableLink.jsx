@@ -7,7 +7,7 @@ export default function EditableLink({ initialLink, propertyId, onUpdated }) {
   const [isEditing, setIsEditing] = useState(false)
   const [link, setLink] = useState(initialLink)
   const [inputValue, setInputValue] = useState(initialLink)
-  const maxLength = 25
+  const maxLength = 20
 
   // Обновляем состояние при изменении initialLink (например, при смене карточки)
   useEffect(() => {
@@ -44,13 +44,13 @@ export default function EditableLink({ initialLink, propertyId, onUpdated }) {
   )
 
   return (
-    <div className="flex items-center justify-between w-full max-w-md">
+    <div className="flex text-[12px] items-center font-daysone justify-between w-full max-w-md">
       {isEditing ? (
         <input
           type="text"
           value={inputValue}
           onChange={(e) => setInputValue(e.target.value)}
-          className="flex-grow px-2 py-1 border border-gray-300 rounded text-sm"
+          className="flex-grow px-2 py-1 border border-gray-300 rounded text-[12px]"
           autoFocus
         />
       ) : (
@@ -58,7 +58,7 @@ export default function EditableLink({ initialLink, propertyId, onUpdated }) {
           href={link || '#'}
           target="_blank"
           rel="noopener noreferrer"
-          className="text-blue-600 hover:underline truncate"
+          className="relative text-blue-500 after:absolute after:left-0 after:bottom-0 after:h-[2px] after:w-0 after:bg-blue-500 after:transition-all after:duration-300 hover:after:w-full"
           title={link}
         >
           {displayText}
@@ -79,7 +79,7 @@ export default function EditableLink({ initialLink, propertyId, onUpdated }) {
             className="text-gray-500 hover:text-gray-700"
             aria-label="Редактировать ссылку"
           >
-            ✏️
+          <span className=''>Изменить</span>
           </button>
         )}
       </div>

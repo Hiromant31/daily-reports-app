@@ -87,7 +87,7 @@ export default function CustomDatePicker({ selectedDate, onChange, direction = '
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="text-[20px] text-red-500 font-daysone"
+        className="text-[12px] text-red-500 font-daysone"
       >
         {selectedDate || 'Выберите дату'}
       </button>
