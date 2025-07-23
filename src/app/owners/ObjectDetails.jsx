@@ -107,19 +107,29 @@ export default function ObjectDetails({ property, onUpdated }) {
 
   const handleLinkUpdated = async () => {
   // Перезагружаем текущий объект из базы
-  const { data, error } = await supabase
-    .from('properties')
-    .select('*')
-    .eq('id', property.id)
-    .single()
+  
+const { data, error } = await supabase
+  .from('properties')
+  .select('*')
+  .eq('id', property.id)
+  .single()
 
-    setLink(data.source_link || '') // Обновляем локальное состояние
-    if (onUpdated) onUpdated(data)
+setLink(data.source_link || '') // Обновляем локальное состояние
+if (onUpdated) {
+  onUpdated((prev) => ({
+    ...prev,
+    source_link: data?.source_link || '',
+  }))
+}
 
   if (!error && data) {
     // Обновляем текущий объект в состоянии
-    if (onUpdated) onUpdated(data)
-  }
+    if (onUpdated) {
+  onUpdated((prev) => ({
+    ...prev,
+    ...data
+  }))
+}}
 }
   // Обработчик изменения даты next_call_date
   const handleDateChange = async (e) => {
@@ -134,7 +144,15 @@ export default function ObjectDetails({ property, onUpdated }) {
 
     if (!error) {
       setDateMessage('Дата обновлена')
-      if (onUpdated) onUpdated()
+      if (!error) {
+  setDateMessage('Дата обновлена')
+  if (onUpdated) {
+    onUpdated((prev) => ({
+      ...prev,
+      next_call_date: newDate
+    }))
+  }
+}
     } else {
       setDateMessage('Ошибка при сохранении')
     }
@@ -233,7 +251,15 @@ export default function ObjectDetails({ property, onUpdated }) {
       .eq('id', property.id)
 
     if (!error && onUpdated) {
-      onUpdated()
+      if (!error) {
+  setDateMessage('Дата обновлена')
+  if (onUpdated) {
+    onUpdated((prev) => ({
+      ...prev,
+      next_call_date: newDate
+    }))
+  }
+}
     }
   }}
 />
@@ -331,7 +357,10 @@ export default function ObjectDetails({ property, onUpdated }) {
           .single()
 
         if (data) {
-          onUpdated(data)
+          onUpdated((prev) => ({
+  ...prev,
+  ...data
+}))
         }
       } else {
         alert('Ошибка при обновлении статуса')

@@ -101,7 +101,9 @@ return (
       <div className="hidden col-span-2 md:flex bg-[#131313] p-[24px] mb-[50px] rounded-[25px] flex-col">
         <span className="font-daysone text-white text-center text-[32px]">АЯКС</span>
         <nav className="flex text-[18px] text-white justify-start font-comfortaa font-bold mt-[20px] flex-col gap-3">
-          <button onClick={() => router.push('/')} className="text-start">Главная</button>
+          <button onClick={() => router.push('/')} className="text-start flex flex-row"
+            ><svg className='pr-2' xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m8 9l5 5v7H8v-4m0 4H3v-7l5-5m1 1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v17h-8m0-14v.01M17 7v.01M17 11v.01M17 15v.01"/>
+            </svg>Главная</button>
           <button onClick={() => router.push('/owners')} className="text-start text-[#F5B8DA]">Мои объекты</button>
           <button onClick={() => router.push('/reports')} className="text-start">Отчёты</button>
           <button onClick={() => router.push('/profile')} className="text-start">Профиль</button>
@@ -147,13 +149,24 @@ return (
       {!isMobile && (
         <div className="flex-grow w-full shadow-[5px_5px_0px_rgba(0,0,0,0.25)] overflow-y-auto">
           {selectedProperty ? (
-            <ObjectDetails
-              property={selectedProperty}
-              onUpdated={reloadProperties}
-            />
-          ) : (
-            <p className="text-gray-500">Выберите объект слева</p>
-          )}
+  <ObjectDetails
+    property={selectedProperty}
+    onUpdated={(updater) => {
+      setSelectedProperty(prev =>
+        typeof updater === 'function' ? updater(prev) : updater
+      )
+      setProperties(prev =>
+        prev.map(p =>
+          p.id === selectedProperty.id
+            ? (typeof updater === 'function' ? updater(p) : updater)
+            : p
+        )
+      )
+    }}
+  />
+) : (
+  <p className="text-gray-500">Выберите объект слева</p>
+)}
         </div>
       )}
       </div>
@@ -177,12 +190,11 @@ return (
             ✕ Закрыть
           </button>
           <ObjectDetails
-            property={selectedProperty}
-            onUpdated={() => {
-              reloadProperties()
-              setDetailsOpen(false)
-            }}
-          />
+  property={selectedProperty}
+  onUpdated={(updater) => {
+    setSelectedProperty(prev => typeof updater === 'function' ? updater(prev) : updater)
+  }}
+/>
         </motion.div>
       )}
     </AnimatePresence>
