@@ -18,7 +18,7 @@ const allStatuses = [
 ]
 
 const defaultVisibleStatuses = allStatuses.filter(
-  (s) => !['продан', 'снят', 'отказ', 'договор'].includes(s)
+  (s) => !['продан', 'снят', 'отказ'].includes(s)
 )
 
 export default function PropertyList({ properties, selected, onSelect }) {
