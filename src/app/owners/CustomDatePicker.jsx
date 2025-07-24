@@ -2,15 +2,20 @@
 
 import { useState, useRef, useEffect } from 'react'
 
-export default function CustomDatePicker({ selectedDate, onChange, direction = 'down' }) {
+export default function CustomDatePicker({ selectedDate, onChange, direction = 'down', align = 'right' }) {
   const [isOpen, setIsOpen] = useState(false)
   const [currentDate, setCurrentDate] = useState(selectedDate ? new Date(selectedDate) : new Date())
-  const [position, setPosition] = useState('right-0')
+  const [positionClass, setPositionClass] = useState('right-0')
   const datePickerRef = useRef(null)
   const buttonRef = useRef(null)
 
+  const pad = (n) => n.toString().padStart(2, '0')
+  const formatLocalDate = (date) => {
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`
+  }
+
   const today = new Date()
-  const todayStr = today.toISOString().slice(0, 10)
+  const todayStr = formatLocalDate(today)
 
   const monthNames = [
     'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
@@ -20,7 +25,7 @@ export default function CustomDatePicker({ selectedDate, onChange, direction = '
   const getStartOffset = () => {
     const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1)
     const dayOfWeek = firstDay.getDay() // воскресенье = 0, понедельник = 1, ...
-    return dayOfWeek === 0 ? 6 : dayOfWeek - 1 // сдвиг, чтобы неделя начиналась с ПН
+    return dayOfWeek === 0 ? 6 : dayOfWeek - 1 // неделя с Пн
   }
 
   const daysInMonth = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0).getDate()
@@ -34,7 +39,7 @@ export default function CustomDatePicker({ selectedDate, onChange, direction = '
 
   for (let i = 1; i <= daysInMonth; i++) {
     const currentDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), i)
-    const dateStr = currentDay.toISOString().slice(0, 10)
+    const dateStr = formatLocalDate(currentDay)
     const isSelected = selectedDate === dateStr
     const isToday = dateStr === todayStr
 
@@ -60,9 +65,19 @@ export default function CustomDatePicker({ selectedDate, onChange, direction = '
     const buttonRect = buttonRef.current?.getBoundingClientRect()
     const calendarWidth = 250
     const spaceRight = window.innerWidth - buttonRect.right
+    const spaceLeft = buttonRect.left
 
-    setPosition(spaceRight < calendarWidth ? 'right-0' : 'left-0')
-  }, [isOpen])
+    // Если передан align явно, то используем его,
+    // иначе определяем автоматически — если справа мало места, позиционируем влево
+    if (align === 'right') {
+      setPositionClass('right-0')
+    } else if (align === 'left') {
+      setPositionClass('left-0')
+    } else {
+      // Автоматическое определение
+      setPositionClass(spaceRight < calendarWidth && spaceLeft > calendarWidth ? 'left-0' : 'right-0')
+    }
+  }, [isOpen, align])
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -98,10 +113,9 @@ export default function CustomDatePicker({ selectedDate, onChange, direction = '
         {selectedDate || 'Выберите дату'}
       </button>
 
-
       {isOpen && (
         <div
-          className={`absolute ${dropdownPositionClass} ${position} w-[250px] bg-white border border-gray-300 shadow-lg rounded-lg p-4 z-50 animate-fade-in-down`}
+          className={`absolute ${dropdownPositionClass} ${positionClass} w-[250px] bg-white border border-gray-300 shadow-lg rounded-lg p-4 z-50 animate-fade-in-down`}
         >
           <div className="flex items-center justify-between mb-2">
             <button onClick={prevMonth} className="text-gray-600 hover:text-gray-900">{'<'}</button>

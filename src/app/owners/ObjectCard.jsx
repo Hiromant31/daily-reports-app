@@ -3,10 +3,22 @@
 import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 
+
 export default function ObjectCard({ property, selected }) {
   const [owners, setOwners] = useState([])
   const [loadingOwners, setLoadingOwners] = useState(true)
   const [error, setError] = useState(null)
+
+  const toLocalDate = (d) => {
+  const date = new Date(d)
+  return new Date(date.getFullYear(), date.getMonth(), date.getDate())
+}
+const today = toLocalDate(new Date())
+const tomorrow = new Date(today.getTime() + 86400000)
+const callDate = property.next_call_date ? toLocalDate(property.next_call_date) : null
+
+const isTomorrow = callDate?.getTime() === tomorrow.getTime()
+const isPastOrToday = callDate ? callDate.getTime() <= today.getTime() : false
 
   // Загрузка собственников при монтировании или изменении property
   useEffect(() => {
@@ -36,7 +48,7 @@ export default function ObjectCard({ property, selected }) {
 
   // Проверка даты
   const isPastDate = property.next_call_date
-    ? new Date(property.next_call_date) < new Date()
+    ? new Date(property.next_call_date) <= new Date()
     : false
 
   return (
@@ -65,9 +77,17 @@ export default function ObjectCard({ property, selected }) {
 
       <p className="font-comfortee text-[14px] ">{property.address}</p>
       <p className='font-daysone'>{property.status}</p>
-      <p className={`text-[12px] font-daysone ${isPastDate ? 'text-red-500' : ''}`}>
-        {property.next_call_date || '—'}
-      </p>
+      <p
+  className={`text-[12px] font-daysone ${
+    isTomorrow
+      ? 'text-yellow-600'
+      : isPastOrToday
+      ? 'text-red-500'
+      : 'text-black'
+  }`}
+>
+  {property.next_call_date || '—'}
+</p>
     </div>
   )
 }

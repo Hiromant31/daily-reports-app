@@ -241,6 +241,7 @@ export default function AddPropertyModal({ user, onClose, onCreated }) {
             selectedDate={date}
             onChange={handleDateChange}
             direction='up'
+            align='left'
           />
         </div>
         <textarea

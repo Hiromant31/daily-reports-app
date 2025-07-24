@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { supabase } from '@/lib/supabaseClient'
 import EditableLink from './EditableLink'
 import CustomDatePicker from './CustomDatePicker'
+import EditableField from './EditableField'
+
 
 export default function ObjectDetails({ property, onUpdated }) {
   // Состояния
@@ -233,8 +235,8 @@ if (onUpdated) {
   }
 
   return (
-    <div className="bg-[#FAE2E2] shadow p-6 rounded-lg mx-5">
-      <div className='flex h-[40pxpx] content-end justify-between'>
+    <div className="p-5 h-full w-full">
+      <div className='flex h-[40px] content-end justify-between'>
             <h2 className="text-[20px] font-daysone content-end ">Собственник</h2>
             <div className='flex lex-col'>
                   <label className="block text-sm text-right mr-1 font-daysone text-[10px] font-medium">
@@ -262,6 +264,7 @@ if (onUpdated) {
 }
     }
   }}
+  align='right'
 />
       </div>
       </div>
@@ -274,11 +277,43 @@ if (onUpdated) {
           <div key={owner.id} className=" font-daysone mb-[20px] text-[12px] ">
             <div className='grid grid-cols-6 my-[10px] gap-2 rounded-[8px] border border-[#131313]'>
               <div className='pl-[10px] col-span-2 text-white rounded-[6px] bg-[#131313] w-full'>Имя</div>
-              <div className='col-span-4 pl-20px'>{owner.full_name}</div>
+              <div className='col-span-4'>
+  <EditableField
+    label=""
+    value={owner.full_name}
+    onSave={async (newName) => {
+      const { error } = await supabase
+        .from('owners')
+        .update({ full_name: newName })
+        .eq('id', owner.id)
+      if (!error) {
+        setOwners((prev) =>
+          prev.map((o) => (o.id === owner.id ? { ...o, full_name: newName } : o))
+        )
+      }
+    }}
+  />
+</div>
             </div>
             <div className='grid grid-cols-6 gap-2 rounded-[8px] border border-[#131313]'>
               <div className='pl-[10px] col-span-2 text-white rounded-[6px] bg-[#131313] w-full'>Телефон</div>
-              <div className='col-span-4 pl-20px'>{owner.phone}</div>
+              <div className='col-span-4'>
+  <EditableField
+    label=""
+    value={owner.phone}
+    onSave={async (newPhone) => {
+      const { error } = await supabase
+        .from('owners')
+        .update({ phone: newPhone })
+        .eq('id', owner.id)
+      if (!error) {
+        setOwners((prev) =>
+          prev.map((o) => (o.id === owner.id ? { ...o, phone: newPhone } : o))
+        )
+      }
+    }}
+  />
+</div>
               </div>
           </div>
         ))
@@ -292,11 +327,37 @@ if (onUpdated) {
       <div className=" font-daysone mb-[20px] text-[12px] ">
             <div className='grid grid-cols-8 my-[10px] gap-2 rounded-[8px] border border-[#131313]'>
               <div className='pl-[10px] col-span-3 text-white rounded-[6px] bg-[#131313] w-full'>{property.property_type}</div>
-              <div className='col-span-4 pl-20px'>{property.description}</div>
+              <EditableField
+  label=""
+  value={property.description}
+  fieldType="textarea"
+  onSave={async (newValue) => {
+    const { error } = await supabase
+      .from('properties')
+      .update({ description: newValue })
+      .eq('id', property.id)
+    if (!error && onUpdated) {
+      onUpdated((prev) => ({ ...prev, description: newValue }))
+    }
+  }}
+/>
+
             </div>
             <div className='grid grid-cols-8 gap-2 rounded-[8px] border border-[#131313]'>
               <div className='pl-[10px] col-span-3 text-white rounded-[6px] bg-[#131313] w-full'>Адрес</div>
-              <div className='col-span-4 pl-20px'>{property.address}</div>
+              <EditableField
+  label=""
+  value={property.address}
+  onSave={async (newValue) => {
+    const { error } = await supabase
+      .from('properties')
+      .update({ address: newValue })
+      .eq('id', property.id)
+    if (!error && onUpdated) {
+      onUpdated((prev) => ({ ...prev, address: newValue }))
+    }
+  }}
+/>
               </div>
             <div className='grid grid-cols-8 gap-2 my-[10px] '>
               <div className='pl-[10px] col-span-4 rounded-[8px] border border-[#131313] w-full'>
@@ -332,7 +393,19 @@ if (onUpdated) {
   title="Скопировать НО"
 >
 <p className="">
-    <strong></strong> {property.object_number || <span className="text-gray-400">Не указан</span>}
+    <strong></strong> {<EditableField
+  label=""
+  value={property.object_number}
+  onSave={async (newValue) => {
+    const { error } = await supabase
+      .from('properties')
+      .update({ object_number: newValue })
+      .eq('id', property.id)
+    if (!error && onUpdated) {
+      onUpdated((prev) => ({ ...prev, object_number: newValue }))
+    }
+  }}
+/> || <span className="text-gray-400">Не указан</span>}
   </p>
 </button>
 </div>
@@ -460,7 +533,7 @@ if (onUpdated) {
         <p className="text-gray-500">Прозвонов нет</p>
       ) : (
         calls.map(call => (
-          <div key={call.id} className="mb-2">
+          <div key={call.id} className="pb-10">
             <p className="text-sm text-gray-500">{call.call_date}</p>
             <p className="text-gray-800">{call.comment}</p>
           </div>
