@@ -327,6 +327,7 @@ if (onUpdated) {
       <div className=" font-daysone mb-[20px] text-[12px] ">
             <div className='grid grid-cols-8 my-[10px] gap-2 rounded-[8px] border border-[#131313]'>
               <div className='pl-[10px] col-span-3 text-white rounded-[6px] bg-[#131313] w-full'>{property.property_type}</div>
+              <div className='col-span-4'>
               <EditableField
   label=""
   value={property.description}
@@ -343,8 +344,10 @@ if (onUpdated) {
 />
 
             </div>
+            </div>
             <div className='grid grid-cols-8 gap-2 rounded-[8px] border border-[#131313]'>
               <div className='pl-[10px] col-span-3 text-white rounded-[6px] bg-[#131313] w-full'>Адрес</div>
+              <div className='col-span-4'>
               <EditableField
   label=""
   value={property.address}
@@ -359,6 +362,7 @@ if (onUpdated) {
   }}
 />
               </div>
+              </div>
             <div className='grid grid-cols-8 gap-2 my-[10px] '>
               <div className='pl-[10px] col-span-4 rounded-[8px] border border-[#131313] w-full'>
                           <div className="flex items-center mt-1">
@@ -369,45 +373,49 @@ if (onUpdated) {
     {notification}
   </div>
 )}
-  <button
-  onClick={() => {
-    const text = property.object_number
-    if (!text) {
-      setNotification('Нет значения для копирования')
-      setTimeout(() => setNotification(''), 2000)
-      return
-    }
+  <div className="flex items-center gap-2">
+  <EditableField
+    label=""
+    value={property.object_number}
+    onSave={async (newValue) => {
+      const { error } = await supabase
+        .from('properties')
+        .update({ object_number: newValue })
+        .eq('id', property.id)
+      if (!error && onUpdated) {
+        onUpdated((prev) => ({ ...prev, object_number: newValue }))
+      }
+    }}
+  />
 
-    navigator.clipboard.writeText(text)
-      .then(() => {
-        setNotification('НО скопирован в буфер обмена')
+  <button
+    onClick={() => {
+      const text = property.object_number
+      if (!text) {
+        setNotification('Нет значения для копирования')
         setTimeout(() => setNotification(''), 2000)
-      })
-      .catch(err => {
-        console.error('Ошибка копирования:', err)
-        setNotification('Ошибка копирования')
-        setTimeout(() => setNotification(''), 2000)
-      })
-  }}
-  className=" text-gray-500 hover:text-gray-700 focus:outline-none"
-  title="Скопировать НО"
->
-<p className="">
-    <strong></strong> {<EditableField
-  label=""
-  value={property.object_number}
-  onSave={async (newValue) => {
-    const { error } = await supabase
-      .from('properties')
-      .update({ object_number: newValue })
-      .eq('id', property.id)
-    if (!error && onUpdated) {
-      onUpdated((prev) => ({ ...prev, object_number: newValue }))
-    }
-  }}
-/> || <span className="text-gray-400">Не указан</span>}
-  </p>
-</button>
+        return
+      }
+
+      navigator.clipboard.writeText(text)
+        .then(() => {
+          setNotification('НО скопирован в буфер обмена')
+          setTimeout(() => setNotification(''), 2000)
+        })
+        .catch(err => {
+          console.error('Ошибка копирования:', err)
+          setNotification('Ошибка копирования')
+          setTimeout(() => setNotification(''), 2000)
+        })
+    }}
+    className="text-gray-500 hover:text-gray-700 focus:outline-none"
+    title="Скопировать НО"
+  >
+    📋
+  </button>
+</div>
+
+
 </div>
               </div>
               <div className='col-span-4 pl-20px border rounded-[8px] border-[#131313]'>

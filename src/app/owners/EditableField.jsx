@@ -12,7 +12,7 @@ export default function EditableField({ label, value, onSave, fieldType = 'text'
 
   return (
     <div className={`${className}`}>
-      <label className="block text-sm font-medium text-gray-700">{label}</label>
+      <label className="block justify-between w-full text-sm font-medium text-gray-700">{label}</label>
       {editing ? (
         <div className="flex gap-2">
           {fieldType === 'textarea' ? (
@@ -30,13 +30,12 @@ export default function EditableField({ label, value, onSave, fieldType = 'text'
             />
           )}
           <button onClick={handleSave} className="bg-green-600 text-white rounded hover:bg-green-700">
-            Сохранить
+            ОК
           </button>
         </div>
       ) : (
         <div className="flex justify-between items-center rounded cursor-pointer" onClick={() => setEditing(true)}>
           <span>{value || <span className="text-gray-400">Не указано</span>}</span>
-          <button className="text-blue-500 hover:underline">Редактировать</button>
         </div>
       )}
     </div>
