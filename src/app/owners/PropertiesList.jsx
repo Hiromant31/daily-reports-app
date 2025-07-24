@@ -34,7 +34,7 @@ export default function PropertyList({ properties, selected, onSelect }) {
   const filtered = useMemo(() => {
     const term = searchTerm.toLowerCase()
     return properties
-      .filter((p) => visibleStatuses.includes(p.status || ''))
+      .filter((p) => p && visibleStatuses.includes(p.status || ''))
       .filter((p) => {
         // Проверяем по номеру объекта, адресу и имени владельца
         return (
